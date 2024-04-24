@@ -15,6 +15,7 @@ Max-Planck-Institut für Meteorologie, Hamburg
 
 #========IMPORTS====
 import numpy as np
+import scipy.io
 
 import settings
 import debug
@@ -27,7 +28,7 @@ year2find = settings.INPUT_TIME['year2find']
 month2plot = settings.INPUT_TIME['month2plot']
 
 year_output = np.arange(year_min, year_max+1)
-timevec = np.arange(1980, year_max+1+1/12, 1/12)
+#timevec = np.arange(1980, year_max+1+1/12, 1/12)
 
 loncropmin = settings.INPUT_GEOBORDERS['lonmin']
 loncropmax = settings.INPUT_GEOBORDERS['lonmax']
@@ -75,4 +76,12 @@ if(SSOM_go == True):
     nnnumber = settings.INPUT_METHOD_SSOM['nnnumber']
 
 
-#========1) load cluster data ====
+#========1) load cluster data====
+data_mld = scipy.io.loadmat(settings.PATH_DATA_MLD, appendmat=False)['mld']
+data_sss = scipy.io.loadmat(settings.PATH_DATA_SSS, appendmat=False)['sss']
+data_pco2_taka = scipy.io.loadmat(settings.PATH_DATA_PCO2TAKA, appendmat=False)['pco2_taka']
+data_sst = scipy.io.loadmat(settings.PATH_DATA_SST, appendmat=False)['sst']
+
+
+#========2) take 20-year average====
+timevec = np.arange(settings.TWENTYYEARAVERAGE_TIMEVEC_MIN, settings.TWENTYYEARAVERAGE_TIMEVEC_MAX, 1/12)

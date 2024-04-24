@@ -55,3 +55,8 @@ PATH_DATA_SSS = 'data/sss.mat'
 PATH_DATA_SST = 'data/sst.mat'
 PATH_DATA_WIND = 'data/wind.mat'
 """These are the paths to the data, at the moment as .mat files."""
+
+
+#========2) take 20-year average====
+TWENTYYEARAVERAGE_TIMEVEC_MIN = 1980
+TWENTYYEARAVERAGE_TIMEVEC_MAX = 2023
