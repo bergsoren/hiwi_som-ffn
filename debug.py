@@ -7,7 +7,7 @@ debug = True
 
 def message(debugmessage):
     """a version of print(), which can be turned off and on in a central
-    location for debugging
+    location for debugging.
 
     Args:
         debugmessage (String): The debug message to be printed in the console.
