@@ -41,3 +41,17 @@ INPUT_METHOD_MLR = {'MLRnr': 'MLR100'}
 
 INPUT_METHOD_SSOM = {'SSOMnr': 'fCO2_Super_SOM_biome_1', 'nnnumber': 2}
 """If INPUT_METHOD['SSOM'] == True further enter method."""
+
+
+#========1) load cluster data====
+PATH_DATA_ACO2 = 'data/aco2.mat'
+PATH_DATA_CHL = 'data/chl.mat'
+PATH_DATA_MLD = 'data/mld.mat'
+PATH_DATA_PCO2TAKA = 'data/pco2_taka.mat'
+PATH_DATA_PRESSURE = 'data/pressure.mat'
+PATH_DATA_SEAICE = 'data/seaice.mat'
+PATH_DATA_SOCAT = 'data/socat.mat'
+PATH_DATA_SSS = 'data/sss.mat'
+PATH_DATA_SST = 'data/sst.mat'
+PATH_DATA_WIND = 'data/wind.mat'
+"""These are the paths to the data, at the moment as .mat files."""
