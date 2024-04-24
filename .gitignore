@@ -1,0 +1,22 @@
+/venv/
+/.DS_Store
+/.ipynb_checkpoints/
+
+/plots_pdf/
+/plots_png/
+/data/
+
+#setup:
+#pip install jupyterlab && pip install numpy && pip install scipy && pip install pandas && pip install matplotlib && pip install ipympl && pip install scienceplots
+#first cell:
+# %matplotlib inline
+# import numpy as np
+# import scipy as sp
+# import pandas as pd
+# import matplotlib.pyplot as plt
+
+# np.set_printoptions(threshold=100)
+# plt.style.use(['science', 'notebook', 'no-latex'])
+# plt.rcParams["figure.figsize"] = (5, 5)
+# pd.set_option("display.max_columns", None)
+# pd.set_option("display.max_rows", None)
