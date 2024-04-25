@@ -63,3 +63,6 @@ TWENTYYEARAVERAGE_TIMEVEC_MIN = 1982
 TWENTYYEARAVERAGE_TIMEVEC_MAX = 2022
 """timevec is the time dimension (first dimension of the data, e.g. months)
 in years"""
+
+
+#========3) reshape and rearrange for SOM====

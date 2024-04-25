@@ -16,6 +16,8 @@ Max-Planck-Institut für Meteorologie, Hamburg
 #========IMPORTS====
 import numpy as np
 import scipy.io
+import torch
+import quicksom.som as qsom
 
 import settings
 import debug
@@ -101,3 +103,19 @@ for i in range(12):
     data_sss_annual = np.nanmean(data_sss[i::12, :, :])
     data_sst_annual = np.nanmean(data_sst[i::12, :, :])
 
+som_input = [data_mld_annual, data_pco2_taka_annual, data_sss_annual, data_sst_annual]
+
+debug.message(np.linspace(-179.5, 179.5, 360))
+debug.message(np.linspace(-89.5, 89.5, 180))
+
+
+#========3) reshape and rearrange for SOM====
+
+
+#========5) SOM part to identify biomes====
+net = qsom.SOM(maphight, maplength, som_input.shape, n_epoch=epochnr)
+learning_error = net.fit()
+predicted_clusts, errors = net.predict_cluster()
+
+
+#========6) Smoothing of biomes====
