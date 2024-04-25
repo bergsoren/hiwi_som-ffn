@@ -18,7 +18,8 @@ boarders'."""
 
 INPUT_METHOD = {'FFN': False, 'SOM': False, 'Clustering': False, 'MLR': False,
                 'BIOME': True, 'SSOM': False}
-"""Configure here what was before in the input dialog 'please enter method'."""
+"""Configure here what was before in the input dialog
+'please enter method'."""
 
 INPUT_METHOD_FFN_OR_BIOME = {
     'net2take': 'GCBv2020_GCBv2020a-combined_smoothed', 'netlayer': '2layer',
@@ -58,5 +59,7 @@ PATH_DATA_WIND = 'data/wind.mat'
 
 
 #========2) take 20-year average====
-TWENTYYEARAVERAGE_TIMEVEC_MIN = 1980
-TWENTYYEARAVERAGE_TIMEVEC_MAX = 2023
+TWENTYYEARAVERAGE_TIMEVEC_MIN = 1982
+TWENTYYEARAVERAGE_TIMEVEC_MAX = 2022
+"""timevec is the time dimension (first dimension of the data, e.g. months)
+in years"""

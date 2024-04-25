@@ -77,11 +77,27 @@ if(SSOM_go == True):
 
 
 #========1) load cluster data====
+"""Loading the data needed for clustering. The data is in the format [months
+latitude longitude] = 480x180x360."""
 data_mld = scipy.io.loadmat(settings.PATH_DATA_MLD, appendmat=False)['mld']
+data_pco2_taka = scipy.io.loadmat(settings.PATH_DATA_PCO2TAKA,
+                                  appendmat=False)['pco2_taka']
 data_sss = scipy.io.loadmat(settings.PATH_DATA_SSS, appendmat=False)['sss']
-data_pco2_taka = scipy.io.loadmat(settings.PATH_DATA_PCO2TAKA, appendmat=False)['pco2_taka']
 data_sst = scipy.io.loadmat(settings.PATH_DATA_SST, appendmat=False)['sst']
 
 
 #========2) take 20-year average====
-timevec = np.arange(settings.TWENTYYEARAVERAGE_TIMEVEC_MIN, settings.TWENTYYEARAVERAGE_TIMEVEC_MAX, 1/12)
+timevec = np.arange(settings.TWENTYYEARAVERAGE_TIMEVEC_MIN,
+                    settings.TWENTYYEARAVERAGE_TIMEVEC_MAX, 1/12)
+"""timevec is the time dimension (first dimension of the data, e.g. months)
+in years"""
+
+for i in range(12):
+    """Takes annual mean of the data ignoring NaNs, therefore the
+    data_annual[0, :, :] is for january, data_annual[1, :, :] for
+    february, ..."""
+    data_mld_annual = np.nanmean(data_mld[i::12, :, :])
+    data_pco2_taka_annual = np.nanmean(data_pco2_taka[i::12, :, :])
+    data_sss_annual = np.nanmean(data_sss[i::12, :, :])
+    data_sst_annual = np.nanmean(data_sst[i::12, :, :])
+
