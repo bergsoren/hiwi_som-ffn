@@ -102,6 +102,8 @@ containing the latidude in degrees from -89.5 to 89.5 and data_lon[:, i]
 containing the longitude in degrees from -179.5 to 179.5.
 """
 
+data_months_annual = np.zeros((12, 180, 360))
+
 for i in range(12):
     """Takes annual mean of the data ignoring NaNs, therefore the
     data_annual[0, :, :] is for january, data_annual[1, :, :] for
@@ -110,9 +112,18 @@ for i in range(12):
     data_pco2_taka_annual = np.nanmean(data_pco2_taka[i::12, :, :])
     data_sss_annual = np.nanmean(data_sss[i::12, :, :])
     data_sst_annual = np.nanmean(data_sst[i::12, :, :])
+    
+    data_months_annual[i, :, :] = i+1
+    """data_months_annual[0, :, :] is a 180x360 array of 1s for january,
+    data_months_annual[1, :, :] is a 180x360 array of 2s for february etc.
+    """
+
 
 data_lat_annual = np.tile(data_lat, (12, 1, 1))
 data_lon_annual = np.tile(data_lon, (12, 1, 1))
+"""adding another dimension for data_lat and data_lon to be in the same shape
+as the other data.
+"""
 
 som_input = [data_mld_annual, data_pco2_taka_annual, data_sss_annual, data_sst_annual]
 
