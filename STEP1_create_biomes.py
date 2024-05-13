@@ -87,12 +87,20 @@ data_pco2_taka = scipy.io.loadmat(settings.PATH_DATA_PCO2TAKA,
 data_sss = scipy.io.loadmat(settings.PATH_DATA_SSS, appendmat=False)['sss']
 data_sst = scipy.io.loadmat(settings.PATH_DATA_SST, appendmat=False)['sst']
 
+#data_lat = scipy.io.loadmat(settings.PATH_DATA_LAT, appendmat=False)['latsst']
+#data_lon = scipy.io.loadmat(settings.PATH_DATA_LON, appendmat=False)['lonsst']
 
 #========2) take 20-year average====
 timevec = np.arange(settings.TWENTYYEARAVERAGE_TIMEVEC_MIN,
                     settings.TWENTYYEARAVERAGE_TIMEVEC_MAX, 1/12)
 """timevec is the time dimension (first dimension of the data, e.g. months)
-in years"""
+in years."""
+data_lat = np.tile(np.linspace(-89.5, 89.5, 180), (360, 1)).T
+data_lon = np.tile(np.linspace(-179.5, 179.5, 360), (180, 1))
+"""data_lat and data_lon are both 180x360 arrays with data_lat[i, :]
+containing the latidude in degrees from -89.5 to 89.5 and data_lon[:, i]
+containing the longitude in degrees from -179.5 to 179.5.
+"""
 
 for i in range(12):
     """Takes annual mean of the data ignoring NaNs, therefore the
@@ -103,10 +111,11 @@ for i in range(12):
     data_sss_annual = np.nanmean(data_sss[i::12, :, :])
     data_sst_annual = np.nanmean(data_sst[i::12, :, :])
 
+data_lat_annual = np.tile(data_lat, (12, 1, 1))
+data_lon_annual = np.tile(data_lon, (12, 1, 1))
+
 som_input = [data_mld_annual, data_pco2_taka_annual, data_sss_annual, data_sst_annual]
 
-debug.message(np.linspace(-179.5, 179.5, 360))
-debug.message(np.linspace(-89.5, 89.5, 180))
 
 
 #========3) reshape and rearrange for SOM====
