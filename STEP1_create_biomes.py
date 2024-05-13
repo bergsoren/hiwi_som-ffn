@@ -90,6 +90,10 @@ data_sst = scipy.io.loadmat(settings.PATH_DATA_SST, appendmat=False)['sst']
 #data_lat = scipy.io.loadmat(settings.PATH_DATA_LAT, appendmat=False)['latsst']
 #data_lon = scipy.io.loadmat(settings.PATH_DATA_LON, appendmat=False)['lonsst']
 
+debug.message('datamldan?')
+debug.message(np.nanmean(data_mld[0::12, :, :]))
+
+
 #========2) take 20-year average====
 timevec = np.arange(settings.TWENTYYEARAVERAGE_TIMEVEC_MIN,
                     settings.TWENTYYEARAVERAGE_TIMEVEC_MAX, 1/12)
@@ -103,7 +107,7 @@ containing the longitude in degrees from -179.5 to 179.5.
 """
 
 data_months_annual = np.zeros((12, 180, 360))
-
+#TODO: doesnt work, because left side isnt in form of data[i, :, :]
 for i in range(12):
     """Takes annual mean of the data ignoring NaNs, therefore the
     data_annual[0, :, :] is for january, data_annual[1, :, :] for
@@ -125,13 +129,21 @@ data_lon_annual = np.tile(data_lon, (12, 1, 1))
 as the other data.
 """
 
-som_input = [data_mld_annual, data_pco2_taka_annual, data_sss_annual, data_sst_annual]
-
+debug.message(data_mld_annual.shape)
+debug.message(data_pco2_taka_annual.shape)
+debug.message(data_sss_annual.shape)
+debug.message(data_sst_annual.shape)
+debug.message(data_lat_annual.shape)
+debug.message(data_lon_annual.shape)
+debug.message(data_months_annual.shape)
 
 
 #========3) reshape and rearrange for SOM====
+som_input = np.array([data_mld_annual, data_pco2_taka_annual, data_sss_annual,
+             data_sst_annual, data_lat_annual, data_lon_annual,
+             data_months_annual])
 
-
+debug.message(som_input.shape)
 #========5) SOM part to identify biomes====
 net = qsom.SOM(maphight, maplength, som_input.shape, n_epoch=epochnr)
 learning_error = net.fit()
