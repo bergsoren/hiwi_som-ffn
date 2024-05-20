@@ -126,15 +126,25 @@ def step1() -> None:
 
     #data_lat_annual = np.tile(data_lat, (12, 1, 1))
     #data_lon_annual = np.tile(data_lon, (12, 1, 1))
-    """adding another dimension for data_lat and data_lon to be in the same shape
-    as the other data.
+    """adding another dimension for data_lat and data_lon to be in the same
+    shape as the other data.
     """
 
 
     #========3) reshape and rearrange for SOM====
-    som_input = np.array([data_mld_annual.flatten(),
-                        data_pco2_taka_annual.flatten(),
-                        data_sss_annual.flatten(), data_sst_annual.flatten()])
+    data_mld_annual_flatten = data_mld_annual.flatten()
+    data_pco2_taka_annual_flatten = data_pco2_taka_annual.flatten()
+    data_sss_annual_flatten = data_sss_annual.flatten()
+    data_sst_annual_flatten = data_sst_annual.flatten()
+
+    nan_index = (np.isnan(data_mld_annual_flatten) 
+                 | np.isnan(data_pco2_taka_annual_flatten) 
+                 | np.isnan(data_sss_annual_flatten) 
+                 | np.isnan(data_sst_annual_flatten))
+
+    som_input = np.array([data_mld_annual_flatten[~nan_index],
+                        data_pco2_taka_annual_flatten[~nan_index],
+                        data_sss_annual_flatten[~nan_index], data_sst_annual_flatten[~nan_index]])
 
     debug.message(som_input.shape)
     #========5) SOM part to identify biomes====
