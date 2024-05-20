@@ -113,7 +113,6 @@ def step1() -> None:
         """Takes annual mean of the data ignoring NaNs, therefore the
         data_annual[0, :, :] is for january, data_annual[1, :, :] for
         february, ..."""
-        debug.message(i)
         data_mld_annual[i, :, :] = np.nanmean(data_mld[i::12, :, :], axis=0)
         data_pco2_taka_annual[i, :, :] = np.nanmean(data_pco2_taka[i::12, :, :], axis=0)
         data_sss_annual[i, :, :] = np.nanmean(data_sss[i::12, :, :], axis=0)
@@ -144,7 +143,6 @@ def step1() -> None:
                            else 'cpu'))
     net = qsom.SOM(maphight, maplength, som_input.shape[1], n_epoch=epochnr,
                    device=('cuda' if torch.cuda.is_available()
-                           else 'mps' if torch.backends.mps.is_available()
                            else 'cpu'))
     learning_error = net.fit(som_input)
     predicted_clusts, errors = net.predict_cluster(som_input)
