@@ -144,13 +144,14 @@ def step1() -> None:
     net = qsom.SOM(maphight, maplength, som_input.shape[1], n_epoch=epochnr,
                    device=('cuda' if torch.cuda.is_available()
                            else 'cpu'))
-    learning_error = net.fit(som_input)
-    predicted_clusts, errors = net.predict_cluster(som_input)
+    # learning_error = net.fit(som_input)
+    # predicted_clusts, errors = net.predict_cluster(som_input)
 
 
     #========6) Smoothing of biomes====
 
-debug.message("name != main")
 if __name__ == '__main__':
     debug.message("name == main")
     step1()
+if __name__ != '__main__':
+    debug.message("name != main")
