@@ -103,11 +103,11 @@ containing the latidude in degrees from -89.5 to 89.5 and data_lon[:, i]
 containing the longitude in degrees from -179.5 to 179.5.
 """
 
-data_months_annual = np.empty((12, 180, 360))
 data_mld_annual = np.empty((12, 180, 360))
 data_pco2_taka_annual = np.empty((12, 180, 360))
 data_sss_annual = np.empty((12, 180, 360))
 data_sst_annual = np.empty((12, 180, 360))
+#data_months_annual = np.empty((12, 180, 360))
 
 for i in range(12):
     """Takes annual mean of the data ignoring NaNs, therefore the
@@ -119,29 +119,33 @@ for i in range(12):
     data_sss_annual[i, :, :] = np.nanmean(data_sss[i::12, :, :], axis=0)
     data_sst_annual[i, :, :] = np.nanmean(data_sst[i::12, :, :], axis=0)
     
-    data_months_annual[i, :, :] = i+1
+    #data_months_annual[i, :, :] = i+1
     """data_months_annual[0, :, :] is a 180x360 array of 1s for january,
     data_months_annual[1, :, :] is a 180x360 array of 2s for february etc.
     """
 
 
-data_lat_annual = np.tile(data_lat, (12, 1, 1))
-data_lon_annual = np.tile(data_lon, (12, 1, 1))
+#data_lat_annual = np.tile(data_lat, (12, 1, 1))
+#data_lon_annual = np.tile(data_lon, (12, 1, 1))
 """adding another dimension for data_lat and data_lon to be in the same shape
 as the other data.
 """
 
 
 #========3) reshape and rearrange for SOM====
-som_input = np.array([data_mld_annual.flatten(), data_pco2_taka_annual.flatten(), data_sss_annual.flatten(),
-             data_sst_annual.flatten(), data_lat_annual.flatten(), data_lon_annual.flatten(),
-             data_months_annual.flatten()])
+som_input = np.array([data_mld_annual.flatten(),
+                      data_pco2_taka_annual.flatten(),
+                      data_sss_annual.flatten(), data_sst_annual.flatten()])
 
 debug.message(som_input.shape)
 #========5) SOM part to identify biomes====
 net = qsom.SOM(maphight, maplength, som_input.shape[1], n_epoch=epochnr)
-#learning_error = net.fit(som_input)
-#predicted_clusts, errors = net.predict_cluster(som_input)
+learning_error = net.fit(som_input)
+predicted_clusts, errors = net.predict_cluster(som_input)
 
 
 #========6) Smoothing of biomes====
+
+
+if __name__ == '__main__':
+    pass
