@@ -170,7 +170,7 @@ def step1() -> None:
 
     som_input = np.array([data_mld_annual_flatten[~nan_index],
                         data_pco2_taka_annual_flatten[~nan_index],
-                        data_sss_annual_flatten[~nan_index], data_sst_annual_flatten[~nan_index]])
+                        data_sss_annual_flatten[~nan_index], data_sst_annual_flatten[~nan_index]]).T
 
     debug.message(som_input.shape)
     #========5) SOM part to identify biomes====
@@ -182,6 +182,8 @@ def step1() -> None:
     debug.message("training completed")
     net.save_pickle('som.p')
     predicted_clusts, errors = net.predict_cluster(som_input)
+    debug.message(predicted_clusts)
+    debug.message(errors)
 
 
     #========6) Smoothing of biomes====
