@@ -166,4 +166,5 @@ if __name__ == '__main__':
     debug.message("name == main")
     step1()
 if __name__ != '__main__':
-    debug.message("name != main")
+    #debug.message("name != main")
+    pass
