@@ -31,6 +31,14 @@ needs to be changed to
     else:
         batch = batch.to(self.device, non_blocking=True)
     print(batch.dtype, batch.device)
+and
+    batch = batch.to(self.device)
+to
+    if torch.backends.mps.is_available():
+        batch = batch.to(self.device, dtype=torch.float32)
+    else:
+        batch = batch.to(self.device)
+    print(batch.dtype, batch.device)
 if mps (Metal Performance Shaders -> MacOS GPU framework) is needed and
 
 Second
