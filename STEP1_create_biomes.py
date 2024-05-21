@@ -22,6 +22,17 @@ import quicksom.som as qsom
 import settings
 import debug
 
+"""In quicksom.som:
+    batch = batch.to(self.device, non_blocking=True)
+needs to be changed to
+    if torch.backends.mps.is_available():
+        batch = batch.to(self.device, dtype=torch.float32, non_blocking=True)
+    else:
+        batch = batch.to(self.device, non_blocking=True)
+    print(batch.dtype, batch.device)
+if mps (Metal Performance Shaders -> MacOS GPU framework) is needed.
+"""
+
 def step1() -> None:
     #========Input_Training_and_Labelling_new_GUI_v2021.m====
     year_min = settings.INPUT_TIME['year_min']
@@ -153,6 +164,7 @@ def step1() -> None:
                            else 'cpu'))
     net = qsom.SOM(maphight, maplength, som_input.shape[1], n_epoch=epochnr,
                    device=('cuda' if torch.cuda.is_available()
+                           else 'mps' if torch.backends.mps.is_available()
                            else 'cpu'))
     learning_error = net.fit(som_input)
     debug.message("training completed")
