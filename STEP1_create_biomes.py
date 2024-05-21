@@ -22,7 +22,8 @@ import quicksom.som as qsom
 import settings
 import debug
 
-"""In quicksom.som:
+"""In quicksom.som two changes are required:
+First
     batch = batch.to(self.device, non_blocking=True)
 needs to be changed to
     if torch.backends.mps.is_available():
@@ -30,7 +31,13 @@ needs to be changed to
     else:
         batch = batch.to(self.device, non_blocking=True)
     print(batch.dtype, batch.device)
-if mps (Metal Performance Shaders -> MacOS GPU framework) is needed.
+if mps (Metal Performance Shaders -> MacOS GPU framework) is needed and
+
+Second
+    clusterer = AgglomerativeClustering(affinity='precomputed', linkage='average', n_clusters=n_local_min)
+needs to be changed to
+    clusterer = AgglomerativeClustering(metric='precomputed', linkage='average', n_clusters=n_local_min)
+as sklearn.cluster has changed the keyword argument name.
 """
 
 def step1() -> None:
@@ -159,9 +166,6 @@ def step1() -> None:
 
     debug.message(som_input.shape)
     #========5) SOM part to identify biomes====
-    debug.message(('cuda' if torch.cuda.is_available()
-                           else 'mps' if torch.backends.mps.is_available()
-                           else 'cpu'))
     net = qsom.SOM(maphight, maplength, som_input.shape[1], n_epoch=epochnr,
                    device=('cuda' if torch.cuda.is_available()
                            else 'mps' if torch.backends.mps.is_available()
