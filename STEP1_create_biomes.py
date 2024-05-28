@@ -22,26 +22,7 @@ import quicksom.som as qsom
 import settings
 import debug
 
-"""In quicksom.som two changes are required:
-First
-    batch = batch.to(self.device, non_blocking=True)
-needs to be changed to
-    if torch.backends.mps.is_available():
-        batch = batch.to(self.device, dtype=torch.float32, non_blocking=True)
-    else:
-        batch = batch.to(self.device, non_blocking=True)
-    print(batch.dtype, batch.device)
-and
-    batch = batch.to(self.device)
-to
-    if torch.backends.mps.is_available():
-        batch = batch.to(self.device, dtype=torch.float32)
-    else:
-        batch = batch.to(self.device)
-    print(batch.dtype, batch.device)
-if mps (Metal Performance Shaders -> MacOS GPU framework) is needed and
-
-Second
+"""In quicksom.som one change is required:
     clusterer = AgglomerativeClustering(affinity='precomputed', linkage='average', n_clusters=n_local_min)
 needs to be changed to
     clusterer = AgglomerativeClustering(metric='precomputed', linkage='average', n_clusters=n_local_min)
@@ -176,8 +157,8 @@ def step1() -> None:
     #========5) SOM part to identify biomes====
     net = qsom.SOM(maphight, maplength, som_input.shape[1], n_epoch=epochnr,
                    device=('cuda' if torch.cuda.is_available()
-                           else 'mps' if torch.backends.mps.is_available()
                            else 'cpu'))
+    debug.message("started fitting")
     learning_error = net.fit(som_input)
     debug.message("training completed")
     net.save_pickle('som.p')
