@@ -168,15 +168,21 @@ def step1() -> None:
     # debug.message(predicted_clusts)
     # debug.message(errors)
 
-    predicted_clusts = scipy.io.loadmat('classes.mat', appendmat=False)['classes']
+    predicted_clusts = scipy.io.loadmat('classes.mat', appendmat=False)['classes'].squeeze()
     debug.message(predicted_clusts.shape)
-    
-    debug.message(predicted_clusts.shape)
+    biomes = np.ones((12, 180, 360)) * -1
+    biomes = biomes.flatten()
+    biomes[np.logical_not(nan_index)] = predicted_clusts
+    biomes = biomes.reshape((12, 180, 360))
+    biomes = scipy.io.loadmat('array_test.mat', appendmat=False)['array_test'].squeeze()
 
     ax = plt.axes(projection=ccrs.PlateCarree())
     ax.coastlines()
+    cmap = plt.colormaps["viridis"].with_extremes(under="white")
+    plot = ax.contourf(data_lon[0], data_lat[:, 0], biomes, cmap=cmap, vmin=0)
+    plt.colorbar(plot)
     
-    #plt.show()
+    plt.show()
 
     #========6) Smoothing of biomes====
 
