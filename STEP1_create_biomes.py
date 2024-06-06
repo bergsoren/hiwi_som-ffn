@@ -18,6 +18,8 @@ import numpy as np
 import scipy.io
 import torch
 import quicksom.som as qsom
+import matplotlib.pyplot as plt
+import cartopy.crs as ccrs
 
 import settings
 import debug
@@ -159,13 +161,22 @@ def step1() -> None:
                    device=('cuda' if torch.cuda.is_available()
                            else 'cpu'))
     debug.message("started fitting")
-    learning_error = net.fit(som_input)
-    debug.message("training completed")
-    net.save_pickle('som.p')
-    predicted_clusts, errors = net.predict_cluster(som_input)
-    debug.message(predicted_clusts)
-    debug.message(errors)
+    # learning_error = net.fit(som_input)
+    # debug.message("training completed")
+    # net.save_pickle('som.p')
+    # predicted_clusts, errors = net.predict_cluster(som_input)
+    # debug.message(predicted_clusts)
+    # debug.message(errors)
 
+    predicted_clusts = scipy.io.loadmat('classes.mat', appendmat=False)['classes']
+    debug.message(predicted_clusts.shape)
+    
+    debug.message(predicted_clusts.shape)
+
+    ax = plt.axes(projection=ccrs.PlateCarree())
+    ax.coastlines()
+    
+    #plt.show()
 
     #========6) Smoothing of biomes====
 
