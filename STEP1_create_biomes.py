@@ -170,10 +170,14 @@ def step1() -> None:
 
     predicted_clusts = scipy.io.loadmat('classes.mat', appendmat=False)['classes'].squeeze()
     debug.message(predicted_clusts.shape)
+
+    #========6) Smoothing of biomes====
     biomes = np.ones((12, 180, 360)) * -1
     biomes = biomes.flatten()
     biomes[np.logical_not(nan_index)] = predicted_clusts
     biomes = biomes.reshape((12, 180, 360))
+
+    #========7) save and plot 3-D biomes====
     biomes = scipy.io.loadmat('array_test.mat', appendmat=False)['array_test'].squeeze()
 
     ax = plt.axes(projection=ccrs.PlateCarree())
@@ -183,8 +187,6 @@ def step1() -> None:
     plt.colorbar(plot)
     
     plt.show()
-
-    #========6) Smoothing of biomes====
 
 if __name__ == '__main__':
     debug.message("name == main")
