@@ -179,7 +179,7 @@ def step1() -> None:
     ax = plt.axes(projection=ccrs.PlateCarree())
     ax.coastlines()
     cmap = plt.colormaps["viridis"].with_extremes(under="white")
-    plot = ax.contourf(data_lon[0], data_lat[:, 0], biomes, cmap=cmap, vmin=0)
+    plot = ax.contourf(data_lon[0], data_lat[:, 0], biomes, np.arange(0, 16.1, 1), cmap=cmap)
     plt.colorbar(plot)
     
     plt.show()
