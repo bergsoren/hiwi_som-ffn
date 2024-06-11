@@ -180,7 +180,8 @@ def step1() -> None:
     biomes = biomes.reshape((12, 180, 360))
 
     #========7) save and plot 3-D biomes====
-    biomes = scipy.io.loadmat('array_test.mat', appendmat=False)['array_test'].squeeze()
+    biomes = biomes[0]
+    #biomes = scipy.io.loadmat('array_test.mat', appendmat=False)['array_test'].squeeze()
 
     ax = plt.axes(projection=ccrs.PlateCarree())
     ax.coastlines()
