@@ -174,7 +174,7 @@ def step1() -> None:
     debug.message(predicted_clusts.shape)
 
     #========6) Smoothing of biomes====
-    biomes = np.ones((12, 180, 360)) * -1
+    biomes = np.full((12, 180, 360), np.nan)
     biomes = biomes.flatten()
     biomes[np.logical_not(nan_index)] = predicted_clusts
     biomes = biomes.reshape((12, 180, 360))
