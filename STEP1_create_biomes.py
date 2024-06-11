@@ -157,6 +157,7 @@ def step1() -> None:
 
     debug.message(som_input.shape)
     #========5) SOM part to identify biomes====
+    debug.message("CUDA: " + str(torch.cuda.is_available()))
     net = qsom.SOM(maphight, maplength, som_input.shape[1], n_epoch=epochnr,
                    device=('cuda' if torch.cuda.is_available()
                            else 'cpu'))
@@ -164,6 +165,7 @@ def step1() -> None:
     # learning_error = net.fit(som_input)
     # debug.message("training completed")
     # net.save_pickle('som.p')
+    # debug.message("pickle saved")
     # predicted_clusts, errors = net.predict_cluster(som_input)
     # debug.message(predicted_clusts)
     # debug.message(errors)
