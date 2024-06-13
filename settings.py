@@ -29,7 +29,7 @@ INPUT_METHOD_FFN_OR_BIOME = {
 enter method."""
 
 INPUT_METHOD_SOM_OR_BIOME = {'SOMnr': 'SOM', 'maplength': 4, 'maphight': 4,
-                             'epochnr': 200, 'load_trained_SOM': 'yes or no',
+                             'epochnr': int(1e6), 'load_trained_SOM': 'yes or no',
                              'hc_clusters': 10}
 """If INPUT_METHOD['SOM'] == True or INPUT_METHOD['BIOME'] == True further
 enter method."""

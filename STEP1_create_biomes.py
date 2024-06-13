@@ -20,6 +20,7 @@ import torch
 import minisom
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
+import time
 
 import settings
 import debug
@@ -159,15 +160,22 @@ def step1() -> None:
     #========5) SOM part to identify biomes====
     debug.message("CUDA: " + str(torch.cuda.is_available()))
 
-    som = minisom.MiniSom(maplength, maphight, som_input.shape[1], sigma=1.0, learning_rate=0.5, neighborhood_function='gaussian', random_seed=0)
+    t0 = time.time()
+    debug.message("SOM training started")
+
+    som = minisom.MiniSom(maplength, maphight, som_input.shape[1], sigma=2.0, learning_rate=0.5, neighborhood_function='gaussian', random_seed=0)
     som.train_random(som_input, epochnr)
 
     classes = np.array([som.winner(x) for x in som_input])
     classes = classes[:, 0] * maplength + classes[:, 1]
     debug.message(classes)
+
+    t1 = time.time()
+    total_time = t1-t0
+    debug.message("SOM training ended\n" + "SOM time: " + str(total_time) + " seconds")
     
     predicted_clusts = classes
-    predicted_clusts = scipy.io.loadmat('classes.mat', appendmat=False)['classes'].squeeze()
+    #predicted_clusts = scipy.io.loadmat('classes.mat', appendmat=False)['classes'].squeeze()
     debug.message(predicted_clusts.shape)
 
     #========6) Smoothing of biomes====
