@@ -17,7 +17,7 @@ Max-Planck-Institut für Meteorologie, Hamburg
 import numpy as np
 import scipy.io
 import torch
-import quicksom.som as qsom
+import minisom
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 
@@ -158,18 +158,15 @@ def step1() -> None:
     debug.message(som_input.shape)
     #========5) SOM part to identify biomes====
     debug.message("CUDA: " + str(torch.cuda.is_available()))
-    net = qsom.SOM(maphight, maplength, som_input.shape[1], n_epoch=epochnr,
-                   device=('cuda' if torch.cuda.is_available()
-                           else 'cpu'))
-    debug.message("started fitting")
-    # learning_error = net.fit(som_input)
-    # debug.message("training completed")
-    # net.save_pickle('som.p')
-    # debug.message("pickle saved")
-    # predicted_clusts, errors = net.predict_cluster(som_input)
-    # debug.message(predicted_clusts)
-    # debug.message(errors)
 
+    som = minisom.MiniSom(maplength, maphight, som_input.shape[1], sigma=1.0, learning_rate=0.5, neighborhood_function='gaussian', random_seed=0)
+    som.train_random(som_input, epochnr)
+
+    classes = np.array([som.winner(x) for x in som_input])
+    classes = classes[:, 0] * maplength + classes[:, 1]
+    debug.message(classes)
+    
+    predicted_clusts = classes
     predicted_clusts = scipy.io.loadmat('classes.mat', appendmat=False)['classes'].squeeze()
     debug.message(predicted_clusts.shape)
 
