@@ -176,11 +176,14 @@ def run(som_sigma=2.0, som_learning_rate=0.5,
     t0 = time.time()
     """Starting time to time SOM.
     """
-    debug.message('SOM training started')
+    print('-----------------------------------------------------------------')
+    print('SOM training started with ' + som_epochnr + ' total epochs.')
+    print('...')
 
     som = minisom.MiniSom(maplength, maphight, som_input.shape[1],
                           sigma=som_sigma, learning_rate=som_learning_rate,
                           neighborhood_function=som_neighborhood_function, random_seed=0)
+    print(f'{som_sigma=}, {som_learning_rate=}, {som_neighborhood_function=}')
     som.train_random(som_input, som_epochnr)
     """Creating and training the SOM.
     """
@@ -193,8 +196,8 @@ def run(som_sigma=2.0, som_learning_rate=0.5,
 
     t1 = time.time()
     total_time = t1-t0
-    print('-----------------------------------------------------------------')
-    print('SOM training ended\n' + 'SOM time: ' + str(total_time) + ' seconds')
+    print('...')
+    print('SOM training ended with a total time of ' + str(total_time) + ' seconds.')
     print('-----------------------------------------------------------------')
     """Second step of timing the SOM.
     """
