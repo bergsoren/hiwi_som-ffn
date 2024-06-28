@@ -19,7 +19,6 @@ import numpy as np
 import scipy.io
 import minisom
 import matplotlib.pyplot as plt
-import cartopy.mpl.geoaxes
 import cartopy.crs as ccrs
 
 import time
@@ -30,7 +29,19 @@ import debug
 def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
         som_sigma=2.0, som_learning_rate=0.5,
         som_neighborhood_function='gaussian',
-        plt_show=True) -> cartopy.mpl.geoaxes.GeoAxes:
+        plt_show=True) -> np.ndarray:
+    """_summary_ TODO
+
+    Args:
+        som_epochnr (_type_, optional): _description_. Defaults to settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'].
+        som_sigma (float, optional): _description_. Defaults to 2.0.
+        som_learning_rate (float, optional): _description_. Defaults to 0.5.
+        som_neighborhood_function (str, optional): _description_. Defaults to 'gaussian'.
+        plt_show (bool, optional): _description_. Defaults to True.
+
+    Returns:
+        np.ndarray: _description_
+    """
     #========Input_Training_and_Labelling_new_GUI_v2021.m====
     """Loading the configured variables from the settings script.
     """
@@ -236,7 +247,7 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
 
     if(plt_show):
         plt.show()
-    return ax
+    return np.array([data_lon[0], data_lat[:, 0], biomes])
 
 if __name__ == '__main__':
     print('-----------------------------------------------------------------')
@@ -257,4 +268,3 @@ if __name__ != '__main__':
     print(' "mexican_hat", "bubble" or "triangle" and')
     print('plt_show is a boolean flag for showing the plot.')
     print('-----------------------------------------------------------------')
-    pass
