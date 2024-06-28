@@ -26,7 +26,7 @@ import settings
 import debug
 
 
-def step1(som_sigma=2.0, som_learning_rate=0.5,
+def run(som_sigma=2.0, som_learning_rate=0.5,
           som_neighborhood_function='gaussian',
           som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr']) -> None:
     #========Input_Training_and_Labelling_new_GUI_v2021.m====
@@ -234,11 +234,13 @@ if __name__ == '__main__':
     print('-----------------------------------------------------------------')
     print('Thanks for using this script!')
     print('-----------------------------------------------------------------')
-    step1()
+    run()
 if __name__ != '__main__':
     print('-----------------------------------------------------------------')
     print('Thanks for importing the ' + __name__ + '.py script!')
-    print('Usage: step1(som_sigma, som_learning_rate,', end='')
+    print('Usage:')
+    print('import' + __name__ + ' as step1')
+    print('step1.run(som_sigma, som_learning_rate,', end='')
     print(' som_neighborhood_function, som_epochnr)')
     print('-----------------------------------------------------------------')
     pass
