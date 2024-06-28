@@ -1,6 +1,7 @@
 """
-Welcome to the simple things: this code uses PyTorch
-(https://github.com/pytorch/pytorch) and creates monthly generated basin wide
+Welcome to the simple things: this code uses MiniSom
+(https://github.com/JustGlowing/minisom) and PyTorch
+(https://github.com/pytorch/pytorch), and creates monthly generated basin wide
 fCO2 maps derrived from the SOM. The input file specifies the year and month
 and the lat-lon area. 
 
@@ -16,24 +17,19 @@ Max-Planck-Institut für Meteorologie, Hamburg
 #========IMPORTS====
 import numpy as np
 import scipy.io
-import torch
 import minisom
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
-import time
 
+import time
 import settings
 import debug
 
-"""In quicksom.som one change is required:
-    clusterer = AgglomerativeClustering(affinity='precomputed', linkage='average', n_clusters=n_local_min)
-needs to be changed to
-    clusterer = AgglomerativeClustering(metric='precomputed', linkage='average', n_clusters=n_local_min)
-as sklearn.cluster has changed the keyword argument name.
-"""
 
 def step1() -> None:
     #========Input_Training_and_Labelling_new_GUI_v2021.m====
+    """Loading the configured variables from the settings script.
+    """
     year_min = settings.INPUT_TIME['year_min']
     year_max = settings.INPUT_TIME['year_max']
     year2find = settings.INPUT_TIME['year2find']
@@ -136,7 +132,7 @@ def step1() -> None:
 
     #data_lat_annual = np.tile(data_lat, (12, 1, 1))
     #data_lon_annual = np.tile(data_lon, (12, 1, 1))
-    """adding another dimension for data_lat and data_lon to be in the same
+    """Adding another dimension for data_lat and data_lon to be in the same
     shape as the other data.
     """
 
@@ -146,29 +142,39 @@ def step1() -> None:
     data_pco2_taka_annual_flatten = data_pco2_taka_annual.flatten()
     data_sss_annual_flatten = data_sss_annual.flatten()
     data_sst_annual_flatten = data_sst_annual.flatten()
+    """Flattening the data to just have one dimension for the training of the
+    SOM.
+    """
 
     nan_index = (np.isnan(data_mld_annual_flatten) 
                  | np.isnan(data_pco2_taka_annual_flatten) 
                  | np.isnan(data_sss_annual_flatten) 
                  | np.isnan(data_sst_annual_flatten))
+    """nan_index has a true where either one of the data sets has a NaN.
+    """
 
     som_input = np.array([data_mld_annual_flatten[~nan_index],
                         data_pco2_taka_annual_flatten[~nan_index],
-                        data_sss_annual_flatten[~nan_index], data_sst_annual_flatten[~nan_index]]).T
+                        data_sss_annual_flatten[~nan_index],
+                        data_sst_annual_flatten[~nan_index]]).T
+    """som_input is the flattened data sets with removed NaNs.
+    """
 
     debug.message(som_input.shape)
     #========5) SOM part to identify biomes====
-    debug.message("CUDA: " + str(torch.cuda.is_available()))
-
     t0 = time.time()
     debug.message("SOM training started")
 
     som = minisom.MiniSom(maplength, maphight, som_input.shape[1], sigma=2.0, learning_rate=0.5, neighborhood_function='gaussian', random_seed=0)
     som.train_random(som_input, epochnr)
+    """Training the SOM.
+    """
 
     classes = np.array([som.winner(x) for x in som_input])
     classes = classes[:, 0] * maplength + classes[:, 1]
     debug.message(classes)
+    """TODO: Documentation.
+    """
 
     t1 = time.time()
     total_time = t1-t0
@@ -183,6 +189,10 @@ def step1() -> None:
     biomes = biomes.flatten()
     biomes[np.logical_not(nan_index)] = predicted_clusts
     biomes = biomes.reshape((12, 180, 360))
+    """Creates a 12x180x360 array of NaNs, flattens them to one dimension
+    as it was done with the data sets, adds the cluster data (which is the
+    same shape/size as the data with removed NaNs)
+    """
 
     #========7) save and plot 3-D biomes====
     biomes = biomes[0]
