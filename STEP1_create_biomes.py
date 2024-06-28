@@ -26,7 +26,9 @@ import settings
 import debug
 
 
-def step1() -> None:
+def step1(som_sigma=2.0, som_learning_rate=0.5,
+          som_neighborhood_function='gaussian',
+          som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr']) -> None:
     #========Input_Training_and_Labelling_new_GUI_v2021.m====
     """Loading the configured variables from the settings script.
     """
@@ -87,7 +89,8 @@ def step1() -> None:
 
     #========1) load cluster data====
     """Loading the data needed for clustering. The data is in the format [months
-    latitude longitude] = 480x180x360."""
+    latitude longitude] = 480x180x360.
+    """
     data_mld = scipy.io.loadmat(settings.PATH_DATA_MLD, appendmat=False)['mld']
     data_pco2_taka = scipy.io.loadmat(settings.PATH_DATA_PCO2TAKA,
                                     appendmat=False)['pco2_taka']
@@ -103,7 +106,8 @@ def step1() -> None:
     timevec = np.arange(settings.TWENTYYEARAVERAGE_TIMEVEC_MIN,
                         settings.TWENTYYEARAVERAGE_TIMEVEC_MAX, 1/12)
     """timevec is the time dimension (first dimension of the data, e.g. months)
-    in years."""
+    in years.
+    """
     data_lat = np.tile(np.linspace(-89.5, 89.5, 180), (360, 1)).T
     data_lon = np.tile(np.linspace(-179.5, 179.5, 360), (180, 1))
     """data_lat and data_lon are both 180x360 arrays with data_lat[i, :]
@@ -123,7 +127,8 @@ def step1() -> None:
     for i in range(12):
         """Takes annual mean of the data ignoring NaNs, therefore the
         data_annual[0, :, :] is for january, data_annual[1, :, :] for
-        february, ..."""
+        february, ...
+        """
         data_mld_annual[i, :, :] = np.nanmean(data_mld[i::12, :, :], axis=0)
         data_pco2_taka_annual[i, :, :] = np.nanmean(data_pco2_taka[i::12, :, :], axis=0)
         data_sss_annual[i, :, :] = np.nanmean(data_sss[i::12, :, :], axis=0)
@@ -171,12 +176,12 @@ def step1() -> None:
     t0 = time.time()
     """Starting time to time SOM.
     """
-    debug.message("SOM training started")
+    debug.message('SOM training started')
 
     som = minisom.MiniSom(maplength, maphight, som_input.shape[1],
-                          sigma=2.0, learning_rate=0.5,
-                          neighborhood_function='gaussian', random_seed=0)
-    som.train_random(som_input, epochnr)
+                          sigma=som_sigma, learning_rate=som_learning_rate,
+                          neighborhood_function=som_neighborhood_function, random_seed=0)
+    som.train_random(som_input, som_epochnr)
     """Creating and training the SOM.
     """
 
@@ -188,7 +193,9 @@ def step1() -> None:
 
     t1 = time.time()
     total_time = t1-t0
-    debug.message("SOM training ended\n" + "SOM time: " + str(total_time) + " seconds")
+    print('-----------------------------------------------------------------')
+    print('SOM training ended\n' + 'SOM time: ' + str(total_time) + ' seconds')
+    print('-----------------------------------------------------------------')
     """Second step of timing the SOM.
     """
     
@@ -216,7 +223,7 @@ def step1() -> None:
 
     ax = plt.axes(projection=ccrs.PlateCarree())
     ax.coastlines()
-    cmap = plt.colormaps["viridis"].with_extremes(under="white")
+    cmap = plt.colormaps['viridis'].with_extremes(under='white')
     plot = ax.contourf(data_lon[0], data_lat[:, 0], biomes, np.arange(0, 16.1, 1), cmap=cmap)
     plt.colorbar(plot)
     plt.show()
@@ -224,8 +231,14 @@ def step1() -> None:
     """
 
 if __name__ == '__main__':
-    debug.message("name == main")
+    print('-----------------------------------------------------------------')
+    print('Thanks for using this script!')
+    print('-----------------------------------------------------------------')
     step1()
 if __name__ != '__main__':
-    debug.message("name != main")
+    print('-----------------------------------------------------------------')
+    print('Thanks for importing the ' + __name__ + '.py script!')
+    print('Usage: step1(som_sigma, som_learning_rate,', end='')
+    print(' som_neighborhood_function, som_epochnr)')
+    print('-----------------------------------------------------------------')
     pass
