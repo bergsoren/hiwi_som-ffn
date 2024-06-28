@@ -19,7 +19,7 @@ import numpy as np
 import scipy.io
 import minisom
 import matplotlib.pyplot as plt
-import cartopy
+import cartopy.mpl.geoaxes
 import cartopy.crs as ccrs
 
 import time
