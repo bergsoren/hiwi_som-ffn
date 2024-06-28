@@ -171,7 +171,7 @@ def run(som_sigma=2.0, som_learning_rate=0.5,
     """som_input is the flattened data sets with removed NaNs.
     """
 
-    debug.message(som_input.shape)
+
     #========5) SOM part to identify biomes====
     t0 = time.time()
     """Starting time to time SOM.
@@ -190,7 +190,6 @@ def run(som_sigma=2.0, som_learning_rate=0.5,
 
     predicted_clusts = np.array([som.winner(x) for x in som_input])
     predicted_clusts = predicted_clusts[:, 0] * maplength + predicted_clusts[:, 1]
-    debug.message(predicted_clusts)
     """TODO: Documentation.
     """
 
@@ -204,6 +203,7 @@ def run(som_sigma=2.0, som_learning_rate=0.5,
     
     #predicted_clusts = scipy.io.loadmat('classes.mat', appendmat=False)['classes'].squeeze()
     debug.message(predicted_clusts.shape)
+    debug.message(predicted_clusts)
 
     #========6) Smoothing of biomes====
     biomes = np.full((12, 180, 360), np.nan)
