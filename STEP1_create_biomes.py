@@ -245,5 +245,10 @@ if __name__ != '__main__':
     print('import ' + __name__ + ' as step1')
     print('step1.run(som_epochnr, som_sigma,', end='')
     print(' som_learning_rate, som_neighborhood_function)')
+    print('\nwhere som_epochnr is the number of total epochs,')
+    print('som_sigma is the initial/maximum radius,')
+    print('som_learning_rate is the learning rate and')
+    print('som_neighborhood_function is one of "gaussian",', end='')
+    print(' "mexican_hat", "bubble" or "triangle".')
     print('-----------------------------------------------------------------')
     pass
