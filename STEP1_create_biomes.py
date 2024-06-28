@@ -29,7 +29,7 @@ import debug
 def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
         som_sigma=2.0, som_learning_rate=0.5,
         som_neighborhood_function='gaussian',
-        plt_show=True) -> np.ndarray:
+        plt_show=True) -> list:
     """_summary_ TODO
 
     Args:
@@ -247,7 +247,7 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
 
     if(plt_show):
         plt.show()
-    return np.array([data_lon[0], data_lat[:, 0], biomes])
+    return [data_lon[0], data_lat[:, 0], biomes]
 
 if __name__ == '__main__':
     print('-----------------------------------------------------------------')
