@@ -26,9 +26,9 @@ import settings
 import debug
 
 
-def run(som_sigma=2.0, som_learning_rate=0.5,
-          som_neighborhood_function='gaussian',
-          som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr']) -> None:
+def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
+        som_sigma=2.0, som_learning_rate=0.5,
+        som_neighborhood_function='gaussian') -> None:
     #========Input_Training_and_Labelling_new_GUI_v2021.m====
     """Loading the configured variables from the settings script.
     """
@@ -38,8 +38,8 @@ def run(som_sigma=2.0, som_learning_rate=0.5,
     month2plot = settings.INPUT_TIME['month2plot']
 
     year_output = np.arange(year_min, year_max+1)
-    #timevec = np.arange(1980, year_max+1+1/12, 1/12)
-    #TODO: delete line?
+    # timevec = np.arange(1980, year_max+1+1/12, 1/12)
+    # TODO: delete line?
 
     loncropmin = settings.INPUT_GEOBORDERS['lonmin']
     loncropmax = settings.INPUT_GEOBORDERS['lonmax']
@@ -97,9 +97,9 @@ def run(som_sigma=2.0, som_learning_rate=0.5,
     data_sss = scipy.io.loadmat(settings.PATH_DATA_SSS, appendmat=False)['sss']
     data_sst = scipy.io.loadmat(settings.PATH_DATA_SST, appendmat=False)['sst']
 
-    #data_lat = scipy.io.loadmat(settings.PATH_DATA_LAT, appendmat=False)['latsst']
-    #data_lon = scipy.io.loadmat(settings.PATH_DATA_LON, appendmat=False)['lonsst']
-    #TODO: delete lines, as is created manually later?
+    # data_lat = scipy.io.loadmat(settings.PATH_DATA_LAT, appendmat=False)['latsst']
+    # data_lon = scipy.io.loadmat(settings.PATH_DATA_LON, appendmat=False)['lonsst']
+    # TODO: delete lines, as is created manually later?
 
 
     #========2) take 20-year average====
@@ -121,8 +121,8 @@ def run(som_sigma=2.0, som_learning_rate=0.5,
     data_sst_annual = np.empty((12, 180, 360))
     """Initialize empty arrays to be filled in the following for loop.
     """
-    #data_months_annual = np.empty((12, 180, 360))
-    #TODO: delete line?
+    # data_months_annual = np.empty((12, 180, 360))
+    # TODO: delete line?
 
     for i in range(12):
         """Takes annual mean of the data ignoring NaNs, therefore the
@@ -134,15 +134,15 @@ def run(som_sigma=2.0, som_learning_rate=0.5,
         data_sss_annual[i, :, :] = np.nanmean(data_sss[i::12, :, :], axis=0)
         data_sst_annual[i, :, :] = np.nanmean(data_sst[i::12, :, :], axis=0)
         
-        #data_months_annual[i, :, :] = i+1
+        # data_months_annual[i, :, :] = i+1
         """data_months_annual[0, :, :] is a 180x360 array of 1s for january,
         data_months_annual[1, :, :] is a 180x360 array of 2s for february etc.
         TODO: delete line?
         """
 
 
-    #data_lat_annual = np.tile(data_lat, (12, 1, 1))
-    #data_lon_annual = np.tile(data_lon, (12, 1, 1))
+    # data_lat_annual = np.tile(data_lat, (12, 1, 1))
+    # data_lon_annual = np.tile(data_lon, (12, 1, 1))
     """Adding another dimension for data_lat and data_lon to be in the same
     shape as the other data. TODO: delete line?
     """
@@ -201,9 +201,9 @@ def run(som_sigma=2.0, som_learning_rate=0.5,
     """Second step of timing the SOM.
     """
     
-    #predicted_clusts = scipy.io.loadmat('classes.mat', appendmat=False)['classes'].squeeze()
-    debug.message(predicted_clusts.shape)
-    debug.message(predicted_clusts)
+    # predicted_clusts = scipy.io.loadmat('classes.mat', appendmat=False)['classes'].squeeze()
+    # debug.message(predicted_clusts.shape)
+    # debug.message(predicted_clusts)
 
     #========6) Smoothing of biomes====
     biomes = np.full((12, 180, 360), np.nan)
@@ -222,7 +222,7 @@ def run(som_sigma=2.0, som_learning_rate=0.5,
     biomes = biomes[0]
     """Plot just january at the moment. TODO.
     """
-    #biomes = scipy.io.loadmat('array_test.mat', appendmat=False)['array_test'].squeeze()
+    # biomes = scipy.io.loadmat('array_test.mat', appendmat=False)['array_test'].squeeze()
 
     ax = plt.axes(projection=ccrs.PlateCarree())
     ax.coastlines()
@@ -243,7 +243,7 @@ if __name__ != '__main__':
     print('Thanks for importing the ' + __name__ + '.py script!')
     print('Usage:', end='\n\n')
     print('import ' + __name__ + ' as step1')
-    print('step1.run(som_sigma, som_learning_rate,', end='')
-    print(' som_neighborhood_function, som_epochnr)')
+    print('step1.run(som_epochnr, som_sigma,', end='')
+    print(' som_learning_rate, som_neighborhood_function)')
     print('-----------------------------------------------------------------')
     pass
