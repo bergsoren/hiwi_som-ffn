@@ -37,6 +37,7 @@ def step1() -> None:
 
     year_output = np.arange(year_min, year_max+1)
     #timevec = np.arange(1980, year_max+1+1/12, 1/12)
+    #TODO: delete line?
 
     loncropmin = settings.INPUT_GEOBORDERS['lonmin']
     loncropmax = settings.INPUT_GEOBORDERS['lonmax']
@@ -95,6 +96,7 @@ def step1() -> None:
 
     #data_lat = scipy.io.loadmat(settings.PATH_DATA_LAT, appendmat=False)['latsst']
     #data_lon = scipy.io.loadmat(settings.PATH_DATA_LON, appendmat=False)['lonsst']
+    #TODO: delete lines, as is created manually later?
 
 
     #========2) take 20-year average====
@@ -113,7 +115,10 @@ def step1() -> None:
     data_pco2_taka_annual = np.empty((12, 180, 360))
     data_sss_annual = np.empty((12, 180, 360))
     data_sst_annual = np.empty((12, 180, 360))
+    """Initialize empty arrays to be filled in the following for loop.
+    """
     #data_months_annual = np.empty((12, 180, 360))
+    #TODO: delete line?
 
     for i in range(12):
         """Takes annual mean of the data ignoring NaNs, therefore the
@@ -127,13 +132,14 @@ def step1() -> None:
         #data_months_annual[i, :, :] = i+1
         """data_months_annual[0, :, :] is a 180x360 array of 1s for january,
         data_months_annual[1, :, :] is a 180x360 array of 2s for february etc.
+        TODO: delete line?
         """
 
 
     #data_lat_annual = np.tile(data_lat, (12, 1, 1))
     #data_lon_annual = np.tile(data_lon, (12, 1, 1))
     """Adding another dimension for data_lat and data_lon to be in the same
-    shape as the other data.
+    shape as the other data. TODO: delete line?
     """
 
 
@@ -150,7 +156,7 @@ def step1() -> None:
                  | np.isnan(data_pco2_taka_annual_flatten) 
                  | np.isnan(data_sss_annual_flatten) 
                  | np.isnan(data_sst_annual_flatten))
-    """nan_index has a true where either one of the data sets has a NaN.
+    """nan_index is True where either one of the data sets has a NaN.
     """
 
     som_input = np.array([data_mld_annual_flatten[~nan_index],
@@ -163,24 +169,29 @@ def step1() -> None:
     debug.message(som_input.shape)
     #========5) SOM part to identify biomes====
     t0 = time.time()
+    """Starting time to time SOM.
+    """
     debug.message("SOM training started")
 
-    som = minisom.MiniSom(maplength, maphight, som_input.shape[1], sigma=2.0, learning_rate=0.5, neighborhood_function='gaussian', random_seed=0)
+    som = minisom.MiniSom(maplength, maphight, som_input.shape[1],
+                          sigma=2.0, learning_rate=0.5,
+                          neighborhood_function='gaussian', random_seed=0)
     som.train_random(som_input, epochnr)
-    """Training the SOM.
+    """Creating and training the SOM.
     """
 
-    classes = np.array([som.winner(x) for x in som_input])
-    classes = classes[:, 0] * maplength + classes[:, 1]
-    debug.message(classes)
+    predicted_clusts = np.array([som.winner(x) for x in som_input])
+    predicted_clusts = predicted_clusts[:, 0] * maplength + predicted_clusts[:, 1]
+    debug.message(predicted_clusts)
     """TODO: Documentation.
     """
 
     t1 = time.time()
     total_time = t1-t0
     debug.message("SOM training ended\n" + "SOM time: " + str(total_time) + " seconds")
+    """Second step of timing the SOM.
+    """
     
-    predicted_clusts = classes
     #predicted_clusts = scipy.io.loadmat('classes.mat', appendmat=False)['classes'].squeeze()
     debug.message(predicted_clusts.shape)
 
@@ -191,11 +202,16 @@ def step1() -> None:
     biomes = biomes.reshape((12, 180, 360))
     """Creates a 12x180x360 array of NaNs, flattens them to one dimension
     as it was done with the data sets, adds the cluster data (which is the
-    same shape/size as the data with removed NaNs)
+    same shape/size as the data with removed NaNs) and the reshapes the array
+    to be the original size of 12x180x360. The result is an array with the
+    size of the original data sets, but with the cluster number instead of the
+    data. NaNs in the original data sets stay NaNs.
     """
 
     #========7) save and plot 3-D biomes====
     biomes = biomes[0]
+    """Plot just january at the moment. TODO.
+    """
     #biomes = scipy.io.loadmat('array_test.mat', appendmat=False)['array_test'].squeeze()
 
     ax = plt.axes(projection=ccrs.PlateCarree())
@@ -203,12 +219,13 @@ def step1() -> None:
     cmap = plt.colormaps["viridis"].with_extremes(under="white")
     plot = ax.contourf(data_lon[0], data_lat[:, 0], biomes, np.arange(0, 16.1, 1), cmap=cmap)
     plt.colorbar(plot)
-    
     plt.show()
+    """Plot the 16 clusters with different colours, white shows the NaNs, therefore the land.
+    """
 
 if __name__ == '__main__':
     debug.message("name == main")
     step1()
 if __name__ != '__main__':
-    #debug.message("name != main")
+    debug.message("name != main")
     pass
