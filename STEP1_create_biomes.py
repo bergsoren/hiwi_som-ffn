@@ -28,7 +28,8 @@ import debug
 
 def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
         som_sigma=2.0, som_learning_rate=0.5,
-        som_neighborhood_function='gaussian') -> None:
+        som_neighborhood_function='gaussian',
+        plt_show=True) -> ccrs.mpl.geoaxes.GeoAxes:
     #========Input_Training_and_Labelling_new_GUI_v2021.m====
     """Loading the configured variables from the settings script.
     """
@@ -229,9 +230,12 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
     cmap = plt.colormaps['viridis'].with_extremes(under='white')
     plot = ax.contourf(data_lon[0], data_lat[:, 0], biomes, np.arange(0, 16.1, 1), cmap=cmap)
     plt.colorbar(plot)
-    plt.show()
     """Plot the 16 clusters with different colours, white shows the NaNs, therefore the land.
     """
+
+    if(plt_show):
+        plt.show()
+    return ax
 
 if __name__ == '__main__':
     print('-----------------------------------------------------------------')
