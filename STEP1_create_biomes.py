@@ -177,7 +177,7 @@ def run(som_sigma=2.0, som_learning_rate=0.5,
     """Starting time to time SOM.
     """
     print('-----------------------------------------------------------------')
-    print('SOM training started with ' + som_epochnr + ' total epochs.')
+    print('SOM training started with ' + str(som_epochnr) + ' total epochs.')
     print('...')
 
     som = minisom.MiniSom(maplength, maphight, som_input.shape[1],
@@ -241,8 +241,8 @@ if __name__ == '__main__':
 if __name__ != '__main__':
     print('-----------------------------------------------------------------')
     print('Thanks for importing the ' + __name__ + '.py script!')
-    print('Usage:')
-    print('import' + __name__ + ' as step1')
+    print('Usage:', end='\n\n')
+    print('import ' + __name__ + ' as step1')
     print('step1.run(som_sigma, som_learning_rate,', end='')
     print(' som_neighborhood_function, som_epochnr)')
     print('-----------------------------------------------------------------')
