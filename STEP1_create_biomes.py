@@ -19,6 +19,7 @@ import numpy as np
 import scipy.io
 import minisom
 import matplotlib.pyplot as plt
+import cartopy
 import cartopy.crs as ccrs
 
 import time
@@ -29,7 +30,7 @@ import debug
 def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
         som_sigma=2.0, som_learning_rate=0.5,
         som_neighborhood_function='gaussian',
-        plt_show=True) -> ccrs.mpl.geoaxes.GeoAxes:
+        plt_show=True) -> cartopy.mpl.geoaxes.GeoAxes:
     #========Input_Training_and_Labelling_new_GUI_v2021.m====
     """Loading the configured variables from the settings script.
     """
