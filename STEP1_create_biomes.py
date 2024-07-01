@@ -271,5 +271,6 @@ if __name__ != '__main__':
     print('som_learning_rate is the learning rate,')
     print('som_neighborhood_function is one of "gaussian",', end='')
     print(' "mexican_hat", "bubble" or "triangle" and')
-    print('plt_show is a boolean flag for showing the plot.')
+    print('plt_show is a boolean flag for showing the plot instead of just', end='')
+    print(' returning data in format of [lon, lat, biomes].')
     print('-----------------------------------------------------------------')
