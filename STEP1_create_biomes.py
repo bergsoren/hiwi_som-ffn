@@ -237,16 +237,17 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
     """
     # biomes = scipy.io.loadmat('array_test.mat', appendmat=False)['array_test'].squeeze()
 
-    ax = plt.axes(projection=ccrs.PlateCarree())
-    ax.coastlines()
-    cmap = plt.colormaps['viridis'].with_extremes(under='white')
-    plot = ax.contourf(data_lon[0], data_lat[:, 0], biomes, np.arange(0, 16.1, 1), cmap=cmap)
-    plt.colorbar(plot)
+    if(plt_show):
+        ax = plt.axes(projection=ccrs.PlateCarree())
+        ax.coastlines()
+        cmap = plt.colormaps['viridis'].with_extremes(under='white')
+        plot = ax.contourf(data_lon[0], data_lat[:, 0], biomes, np.arange(0, 16.1, 1), cmap=cmap)
+        plt.colorbar(plot)
+        plt.show()
     """Plot the 16 clusters with different colours, white shows the NaNs, therefore the land.
     """
 
-    if(plt_show):
-        plt.show()
+    
     return [data_lon[0], data_lat[:, 0], biomes]
 
 if __name__ == '__main__':
