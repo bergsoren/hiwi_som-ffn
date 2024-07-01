@@ -22,6 +22,8 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 
 import time
+import warnings
+
 import settings
 import debug
 
@@ -137,21 +139,23 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
     # data_months_annual = np.empty((12, 180, 360))
     # TODO: delete line?
 
-    for i in range(12):
-        """Takes annual mean of the data ignoring NaNs, therefore the
-        data_annual[0, :, :] is for january, data_annual[1, :, :] for
-        february, ...
-        """
-        data_mld_annual[i, :, :] = np.nanmean(data_mld[i::12, :, :], axis=0)
-        data_pco2_taka_annual[i, :, :] = np.nanmean(data_pco2_taka[i::12, :, :], axis=0)
-        data_sss_annual[i, :, :] = np.nanmean(data_sss[i::12, :, :], axis=0)
-        data_sst_annual[i, :, :] = np.nanmean(data_sst[i::12, :, :], axis=0)
-        
-        # data_months_annual[i, :, :] = i+1
-        """data_months_annual[0, :, :] is a 180x360 array of 1s for january,
-        data_months_annual[1, :, :] is a 180x360 array of 2s for february etc.
-        TODO: delete line?
-        """
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=RuntimeWarning)
+        for i in range(12):
+            """Takes annual mean of the data ignoring NaNs, therefore the
+            data_annual[0, :, :] is for january, data_annual[1, :, :] for
+            february, ...
+            """
+            data_mld_annual[i, :, :] = np.nanmean(data_mld[i::12, :, :], axis=0)
+            data_pco2_taka_annual[i, :, :] = np.nanmean(data_pco2_taka[i::12, :, :], axis=0)
+            data_sss_annual[i, :, :] = np.nanmean(data_sss[i::12, :, :], axis=0)
+            data_sst_annual[i, :, :] = np.nanmean(data_sst[i::12, :, :], axis=0)
+            
+            # data_months_annual[i, :, :] = i+1
+            """data_months_annual[0, :, :] is a 180x360 array of 1s for january,
+            data_months_annual[1, :, :] is a 180x360 array of 2s for february etc.
+            TODO: delete line?
+            """
 
 
     # data_lat_annual = np.tile(data_lat, (12, 1, 1))
