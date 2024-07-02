@@ -3,8 +3,10 @@
 /.ipynb_checkpoints/
 __pycache__/
 
-/plots_pdf/
-/plots_png/
+#/plots_pdf/
+#/plots_png/
+/plots_pdf/.DS_Store
+/plots_png/.DS_Store
 /data/
 /temp/
 /som.p
