@@ -7,6 +7,8 @@ __pycache__/
 #/plots_png/
 /plots_pdf/.DS_Store
 /plots_png/.DS_Store
+/plots_pdf/.ipynb_checkpoints/
+/plots_png/.ipynb_checkpoints/
 /data/
 /temp/
 /som.p
