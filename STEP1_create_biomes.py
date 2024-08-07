@@ -35,14 +35,14 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
     """_summary_ TODO
 
     Args:
-        som_epochnr (_type_, optional): _description_. Defaults to settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'].
+        som_epochnr (int, optional): _description_. Defaults to settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'].
         som_sigma (float, optional): _description_. Defaults to 2.0.
         som_learning_rate (float, optional): _description_. Defaults to 0.5.
         som_neighborhood_function (str, optional): _description_. Defaults to 'gaussian'.
         plt_show (bool, optional): _description_. Defaults to True.
 
     Returns:
-        np.ndarray: _description_
+        list: _description_
     """
     #========Input_Training_and_Labelling_new_GUI_v2021.m====
     """Loading the configured variables from the settings script.
