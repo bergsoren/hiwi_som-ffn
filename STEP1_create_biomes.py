@@ -62,8 +62,8 @@ def run(som_epochnr: int = settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
 
 
     #========2) take 20-year average====
-    timevec: np.ndarray = np.arange(settings.TWENTYYEARAVERAGE_TIMEVEC_MIN,
-                        settings.TWENTYYEARAVERAGE_TIMEVEC_MAX, 1/12)
+    timevec: np.ndarray = np.arange(settings.STEP1_TWENTYYEARAVERAGE_TIMEVEC_MIN,
+                        settings.STEP1_TWENTYYEARAVERAGE_TIMEVEC_MAX, 1/12)
     """timevec is the time dimension (first dimension of the data, e.g. months)
     in years.
     """

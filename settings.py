@@ -47,7 +47,7 @@ INPUT_METHOD_SSOM: dict[str, typing.Any] = {'SSOMnr': 'fCO2_Super_SOM_biome_1', 
 """If INPUT_METHOD['SSOM'] == True further enter method."""
 
 
-#========1) load cluster data====
+#========PATHS====
 PATH_DATA_ACO2: str = 'data/aco2.mat'
 PATH_DATA_CHL: str = 'data/chl.mat'
 PATH_DATA_MLD: str = 'data/mld.mat'
@@ -61,15 +61,16 @@ PATH_DATA_WIND: str = 'data/wind.mat'
 """These are the paths to the data, at the moment as .mat files."""
 
 
-#========2) take 20-year average====
-TWENTYYEARAVERAGE_TIMEVEC_MIN: int = 1982
-TWENTYYEARAVERAGE_TIMEVEC_MAX: int = 2022
+#========STEP1====
+STEP1_TWENTYYEARAVERAGE_TIMEVEC_MIN: int = 1982
+STEP1_TWENTYYEARAVERAGE_TIMEVEC_MAX: int = 2022
 """timevec is the time dimension (first dimension of the data, e.g. months)
-in years"""
+in years."""
 
 
-#========3) reshape and rearrange for SOM====
-
+#========STEP2====
+STEP2_OCEAN: str = 'Global'
+"""Please enter 'Atlantic' or 'Global'."""
 
 
 #-----------------------------------------------------------------------------
