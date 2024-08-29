@@ -19,7 +19,9 @@ import numpy as np
 import scipy.io
 import minisom
 import matplotlib.pyplot as plt
+import matplotlib
 import cartopy.crs as ccrs
+import cartopy
 
 import time
 import warnings
@@ -28,10 +30,10 @@ import settings
 import debug
 
 
-def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
-        som_sigma=2.0, som_learning_rate=0.5,
-        som_neighborhood_function='gaussian',
-        plt_show=True) -> list:
+def run(som_epochnr: int = settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
+        som_sigma: float = 2.0, som_learning_rate: float = 0.5,
+        som_neighborhood_function: str = 'gaussian',
+        plt_show: bool = True) -> list:
     """_summary_ TODO
 
     Args:
@@ -48,11 +50,11 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
     """Loading the data needed for clustering. The data is in the format [months
     latitude longitude] = 480x180x360.
     """
-    data_mld = scipy.io.loadmat(settings.PATH_DATA_MLD, appendmat=False)['mld']
-    data_pco2_taka = scipy.io.loadmat(settings.PATH_DATA_PCO2TAKA,
+    data_mld: np.ndarray = scipy.io.loadmat(settings.PATH_DATA_MLD, appendmat=False)['mld']
+    data_pco2_taka: np.ndarray = scipy.io.loadmat(settings.PATH_DATA_PCO2TAKA,
                                     appendmat=False)['pco2_taka']
-    data_sss = scipy.io.loadmat(settings.PATH_DATA_SSS, appendmat=False)['sss']
-    data_sst = scipy.io.loadmat(settings.PATH_DATA_SST, appendmat=False)['sst']
+    data_sss: np.ndarray = scipy.io.loadmat(settings.PATH_DATA_SSS, appendmat=False)['sss']
+    data_sst: np.ndarray = scipy.io.loadmat(settings.PATH_DATA_SST, appendmat=False)['sst']
 
     # data_lat = scipy.io.loadmat(settings.PATH_DATA_LAT, appendmat=False)['latsst']
     # data_lon = scipy.io.loadmat(settings.PATH_DATA_LON, appendmat=False)['lonsst']
@@ -60,22 +62,22 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
 
 
     #========2) take 20-year average====
-    timevec = np.arange(settings.TWENTYYEARAVERAGE_TIMEVEC_MIN,
+    timevec: np.ndarray = np.arange(settings.TWENTYYEARAVERAGE_TIMEVEC_MIN,
                         settings.TWENTYYEARAVERAGE_TIMEVEC_MAX, 1/12)
     """timevec is the time dimension (first dimension of the data, e.g. months)
     in years.
     """
-    data_lat = np.tile(np.linspace(-89.5, 89.5, 180), (360, 1)).T
-    data_lon = np.tile(np.linspace(-179.5, 179.5, 360), (180, 1))
+    data_lat: np.ndarray = np.tile(np.linspace(-89.5, 89.5, 180), (360, 1)).T
+    data_lon: np.ndarray = np.tile(np.linspace(-179.5, 179.5, 360), (180, 1))
     """data_lat and data_lon are both 180x360 arrays with data_lat[i, :]
     containing the latidude in degrees from -89.5 to 89.5 and data_lon[:, i]
     containing the longitude in degrees from -179.5 to 179.5.
     """
 
-    data_mld_annual = np.empty((12, 180, 360))
-    data_pco2_taka_annual = np.empty((12, 180, 360))
-    data_sss_annual = np.empty((12, 180, 360))
-    data_sst_annual = np.empty((12, 180, 360))
+    data_mld_annual: np.ndarray = np.empty((12, 180, 360))
+    data_pco2_taka_annual: np.ndarray = np.empty((12, 180, 360))
+    data_sss_annual: np.ndarray = np.empty((12, 180, 360))
+    data_sst_annual: np.ndarray = np.empty((12, 180, 360))
     """Initialize empty arrays to be filled in the following for loop.
     """
     # data_months_annual = np.empty((12, 180, 360))
@@ -108,22 +110,22 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
 
 
     #========3) reshape and rearrange for SOM====
-    data_mld_annual_flatten = data_mld_annual.flatten()
-    data_pco2_taka_annual_flatten = data_pco2_taka_annual.flatten()
-    data_sss_annual_flatten = data_sss_annual.flatten()
-    data_sst_annual_flatten = data_sst_annual.flatten()
+    data_mld_annual_flatten: np.ndarray = data_mld_annual.flatten()
+    data_pco2_taka_annual_flatten: np.ndarray = data_pco2_taka_annual.flatten()
+    data_sss_annual_flatten: np.ndarray = data_sss_annual.flatten()
+    data_sst_annual_flatten: np.ndarray = data_sst_annual.flatten()
     """Flattening the data to just have one dimension for the training of the
     SOM.
     """
 
-    nan_index = (np.isnan(data_mld_annual_flatten) 
+    nan_index: np.ndarray = (np.isnan(data_mld_annual_flatten) 
                  | np.isnan(data_pco2_taka_annual_flatten) 
                  | np.isnan(data_sss_annual_flatten) 
                  | np.isnan(data_sst_annual_flatten))
     """nan_index is True where either one of the data sets has a NaN.
     """
 
-    som_input = np.array([data_mld_annual_flatten[~nan_index],
+    som_input: np.ndarray = np.array([data_mld_annual_flatten[~nan_index],
                         data_pco2_taka_annual_flatten[~nan_index],
                         data_sss_annual_flatten[~nan_index],
                         data_sst_annual_flatten[~nan_index]]).T
@@ -132,14 +134,14 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
 
 
     #========5) SOM part to identify biomes====
-    t0 = time.time()
+    t0: float = time.time()
     """Starting time to time SOM.
     """
     print('-----------------------------------------------------------------')
     print('SOM training started with ' + str(som_epochnr) + ' total epochs.')
     print('...')
 
-    som = minisom.MiniSom(settings.maplength, settings.maphight, som_input.shape[1],
+    som: minisom.MiniSom = minisom.MiniSom(settings.maplength, settings.maphight, som_input.shape[1],
                           sigma=som_sigma, learning_rate=som_learning_rate,
                           neighborhood_function=som_neighborhood_function, random_seed=0)
     print(f'{som_sigma=}, {som_learning_rate=}, {som_neighborhood_function=}')
@@ -147,13 +149,13 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
     """Creating and training the SOM.
     """
 
-    predicted_clusts = np.array([som.winner(x) for x in som_input])
-    predicted_clusts = predicted_clusts[:, 0] * settings.maplength + predicted_clusts[:, 1]
+    predicted_clusts: np.ndarray = np.array([som.winner(x) for x in som_input])
+    predicted_clusts: np.ndarray = predicted_clusts[:, 0] * settings.maplength + predicted_clusts[:, 1]
     """TODO: Documentation.
     """
 
-    t1 = time.time()
-    total_time = t1-t0
+    t1: float = time.time()
+    total_time: float = t1-t0
     print('...')
     print('SOM training ended with a total time of ' + str(total_time) + ' seconds.')
     print('-----------------------------------------------------------------')
@@ -165,10 +167,10 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
     # debug.message(predicted_clusts)
 
     #========6) Smoothing of biomes====
-    biomes = np.full((12, 180, 360), np.nan)
-    biomes = biomes.flatten()
+    biomes: np.ndarray = np.full((12, 180, 360), np.nan)
+    biomes: np.ndarray = biomes.flatten()
     biomes[np.logical_not(nan_index)] = predicted_clusts
-    biomes = biomes.reshape((12, 180, 360))
+    biomes: np.ndarray = biomes.reshape((12, 180, 360))
     """Creates a 12x180x360 array of NaNs, flattens them to one dimension
     as it was done with the data sets, adds the cluster data (which is the
     same shape/size as the data with removed NaNs) and the reshapes the array
@@ -178,16 +180,16 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
     """
 
     #========7) save and plot 3-D biomes====
-    biomes = biomes[0]
+    biomes: np.ndarray = biomes[0]
     """Plot just january at the moment. TODO.
     """
     # biomes = scipy.io.loadmat('array_test.mat', appendmat=False)['array_test'].squeeze()
 
     if(plt_show):
-        ax = plt.axes(projection=ccrs.PlateCarree())
+        ax: cartopy.mpl.geoaxes.GeoAxes = plt.axes(projection=ccrs.PlateCarree())
         ax.coastlines()
-        cmap = plt.colormaps['viridis'].with_extremes(under='white')
-        plot = ax.contourf(data_lon[0], data_lat[:, 0], biomes, np.arange(0, 16.1, 1), cmap=cmap)
+        cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
+        plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(data_lon[0], data_lat[:, 0], biomes, np.arange(0, 16.1, 1), cmap=cmap)
         plt.colorbar(plot)
         plt.show()
     """Plot the 16 clusters with different colours, white shows the NaNs, therefore the land.
