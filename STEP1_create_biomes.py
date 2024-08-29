@@ -44,64 +44,6 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
     Returns:
         list: _description_
     """
-    #========Input_Training_and_Labelling_new_GUI_v2021.m====
-    """Loading the configured variables from the settings script.
-    """
-    year_min = settings.INPUT_TIME['year_min']
-    year_max = settings.INPUT_TIME['year_max']
-    year2find = settings.INPUT_TIME['year2find']
-    month2plot = settings.INPUT_TIME['month2plot']
-
-    year_output = np.arange(year_min, year_max+1)
-    # timevec = np.arange(1980, year_max+1+1/12, 1/12)
-    # TODO: delete line?
-
-    loncropmin = settings.INPUT_GEOBORDERS['lonmin']
-    loncropmax = settings.INPUT_GEOBORDERS['lonmax']
-    latcropmin = settings.INPUT_GEOBORDERS['latmin']
-    latcropmax = settings.INPUT_GEOBORDERS['latmax']
-    invareamin = settings.INPUT_GEOBORDERS['invareamin']
-    invareamax = settings.INPUT_GEOBORDERS['invareamax']
-    lonmin = settings.INPUT_GEOBORDERS['lonplotmin']
-    lonmax = settings.INPUT_GEOBORDERS['lonplotmax']
-    latmin = settings.INPUT_GEOBORDERS['latplotmin']
-    latmax = settings.INPUT_GEOBORDERS['latplotmax']
-    version = settings.INPUT_GEOBORDERS['version']
-
-    FFN_go = settings.INPUT_METHOD['FFN']
-    SOM_go = settings.INPUT_METHOD['SOM']
-    CL_go = settings.INPUT_METHOD['Clustering']
-    MLR_go = settings.INPUT_METHOD['MLR']
-    BIOME_go = settings.INPUT_METHOD['BIOME']
-    SSOM_go = settings.INPUT_METHOD['SSOM']
-
-    if(FFN_go == True or BIOME_go == True):
-        net2take = settings.INPUT_METHOD_FFN_OR_BIOME['net2take']
-        netlayer = settings.INPUT_METHOD_FFN_OR_BIOME['netlayer']
-        layer2take = settings.INPUT_METHOD_FFN_OR_BIOME['layer2take']
-        nnnumber = settings.INPUT_METHOD_FFN_OR_BIOME['nnnumber']
-        load_trained_net = settings.INPUT_METHOD_FFN_OR_BIOME['load_trained_net']
-
-    if(SOM_go == True or BIOME_go == True):
-        SOMnr = settings.INPUT_METHOD_SOM_OR_BIOME['SOMnr']
-        maplength = settings.INPUT_METHOD_SOM_OR_BIOME['maplength']
-        maphight = settings.INPUT_METHOD_SOM_OR_BIOME['maphight']
-        epochnr = settings.INPUT_METHOD_SOM_OR_BIOME['epochnr']
-        load_trained_SOM = settings.INPUT_METHOD_SOM_OR_BIOME['load_trained_SOM']
-        hc_clusters = settings.INPUT_METHOD_SOM_OR_BIOME['hc_clusters']
-
-    if(CL_go == True):
-        clusternr = settings.INPUT_METHOD_CL['clusternr']
-        nb_cluster = settings.INPUT_METHOD_CL['nb_cluster']
-
-    if(MLR_go == True):
-        MLRnr = settings.INPUT_METHOD_MLR['MLRnr']
-
-    if(SSOM_go == True):
-        SSOMnr = settings.INPUT_METHOD_SSOM['SSOMnr']
-        nnnumber = settings.INPUT_METHOD_SSOM['nnnumber']
-
-
     #========1) load cluster data====
     """Loading the data needed for clustering. The data is in the format [months
     latitude longitude] = 480x180x360.
@@ -197,7 +139,7 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
     print('SOM training started with ' + str(som_epochnr) + ' total epochs.')
     print('...')
 
-    som = minisom.MiniSom(maplength, maphight, som_input.shape[1],
+    som = minisom.MiniSom(settings.maplength, settings.maphight, som_input.shape[1],
                           sigma=som_sigma, learning_rate=som_learning_rate,
                           neighborhood_function=som_neighborhood_function, random_seed=0)
     print(f'{som_sigma=}, {som_learning_rate=}, {som_neighborhood_function=}')
@@ -206,7 +148,7 @@ def run(som_epochnr=settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
     """
 
     predicted_clusts = np.array([som.winner(x) for x in som_input])
-    predicted_clusts = predicted_clusts[:, 0] * maplength + predicted_clusts[:, 1]
+    predicted_clusts = predicted_clusts[:, 0] * settings.maplength + predicted_clusts[:, 1]
     """TODO: Documentation.
     """
 

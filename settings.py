@@ -1,5 +1,6 @@
 """
 This file includes all settings and configurables.
+Variables in capital letters are to be configured.
 -> Everything that needs to be changed for the code to work will be found in
 this central location.
 """
@@ -66,3 +67,64 @@ in years"""
 
 
 #========3) reshape and rearrange for SOM====
+
+
+
+#-----------------------------------------------------------------------------
+import numpy as np
+"""Loading the configured variables from the settings script.
+Please don't change anything below this point.
+"""
+year_min = INPUT_TIME['year_min']
+year_max = INPUT_TIME['year_max']
+year2find = INPUT_TIME['year2find']
+month2plot = INPUT_TIME['month2plot']
+
+year_output = np.arange(year_min, year_max+1)
+# timevec = np.arange(1980, year_max+1+1/12, 1/12)
+# TODO: delete line?
+
+loncropmin = INPUT_GEOBORDERS['lonmin']
+loncropmax = INPUT_GEOBORDERS['lonmax']
+latcropmin = INPUT_GEOBORDERS['latmin']
+latcropmax = INPUT_GEOBORDERS['latmax']
+invareamin = INPUT_GEOBORDERS['invareamin']
+invareamax = INPUT_GEOBORDERS['invareamax']
+lonmin = INPUT_GEOBORDERS['lonplotmin']
+lonmax = INPUT_GEOBORDERS['lonplotmax']
+latmin = INPUT_GEOBORDERS['latplotmin']
+latmax = INPUT_GEOBORDERS['latplotmax']
+version = INPUT_GEOBORDERS['version']
+
+FFN_go = INPUT_METHOD['FFN']
+SOM_go = INPUT_METHOD['SOM']
+CL_go = INPUT_METHOD['Clustering']
+MLR_go = INPUT_METHOD['MLR']
+BIOME_go = INPUT_METHOD['BIOME']
+SSOM_go = INPUT_METHOD['SSOM']
+
+if(FFN_go == True or BIOME_go == True):
+    net2take = INPUT_METHOD_FFN_OR_BIOME['net2take']
+    netlayer = INPUT_METHOD_FFN_OR_BIOME['netlayer']
+    layer2take = INPUT_METHOD_FFN_OR_BIOME['layer2take']
+    nnnumber = INPUT_METHOD_FFN_OR_BIOME['nnnumber']
+    load_trained_net = INPUT_METHOD_FFN_OR_BIOME['load_trained_net']
+
+if(SOM_go == True or BIOME_go == True):
+    SOMnr = INPUT_METHOD_SOM_OR_BIOME['SOMnr']
+    maplength = INPUT_METHOD_SOM_OR_BIOME['maplength']
+    maphight = INPUT_METHOD_SOM_OR_BIOME['maphight']
+    epochnr = INPUT_METHOD_SOM_OR_BIOME['epochnr']
+    load_trained_SOM = INPUT_METHOD_SOM_OR_BIOME['load_trained_SOM']
+    hc_clusters = INPUT_METHOD_SOM_OR_BIOME['hc_clusters']
+
+if(CL_go == True):
+    clusternr = INPUT_METHOD_CL['clusternr']
+    nb_cluster = INPUT_METHOD_CL['nb_cluster']
+
+if(MLR_go == True):
+    MLRnr = INPUT_METHOD_MLR['MLRnr']
+
+if(SSOM_go == True):
+    SSOMnr = INPUT_METHOD_SSOM['SSOMnr']
+    nnnumber = INPUT_METHOD_SSOM['nnnumber']
