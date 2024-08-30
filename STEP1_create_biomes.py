@@ -56,10 +56,6 @@ def run(som_epochnr: int = settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
     data_sss: np.ndarray = scipy.io.loadmat(settings.PATH_DATA_SSS, appendmat=False)['sss']
     data_sst: np.ndarray = scipy.io.loadmat(settings.PATH_DATA_SST, appendmat=False)['sst']
 
-    # data_lat = scipy.io.loadmat(settings.PATH_DATA_LAT, appendmat=False)['latsst']
-    # data_lon = scipy.io.loadmat(settings.PATH_DATA_LON, appendmat=False)['lonsst']
-    # TODO: delete lines, as is created manually later?
-
 
     #========2) take 20-year average====
     timevec: np.ndarray = np.arange(settings.STEP1_TWENTYYEARAVERAGE_TIMEVEC_MIN,
@@ -80,8 +76,6 @@ def run(som_epochnr: int = settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
     data_sst_annual: np.ndarray = np.empty((12, 180, 360))
     """Initialize empty arrays to be filled in the following for loop.
     """
-    # data_months_annual = np.empty((12, 180, 360))
-    # TODO: delete line?
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=RuntimeWarning)
@@ -95,19 +89,6 @@ def run(som_epochnr: int = settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
             data_sss_annual[i, :, :] = np.nanmean(data_sss[i::12, :, :], axis=0)
             data_sst_annual[i, :, :] = np.nanmean(data_sst[i::12, :, :], axis=0)
             
-            # data_months_annual[i, :, :] = i+1
-            """data_months_annual[0, :, :] is a 180x360 array of 1s for january,
-            data_months_annual[1, :, :] is a 180x360 array of 2s for february etc.
-            TODO: delete line?
-            """
-
-
-    # data_lat_annual = np.tile(data_lat, (12, 1, 1))
-    # data_lon_annual = np.tile(data_lon, (12, 1, 1))
-    """Adding another dimension for data_lat and data_lon to be in the same
-    shape as the other data. TODO: delete line?
-    """
-
 
     #========3) reshape and rearrange for SOM====
     data_mld_annual_flatten: np.ndarray = data_mld_annual.flatten()
