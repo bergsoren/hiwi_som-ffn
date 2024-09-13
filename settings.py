@@ -74,10 +74,12 @@ STEP2_OCEAN: str = 'Global'
 
 
 #-----------------------------------------------------------------------------
-import numpy as np
 """Loading the configured variables from the settings script.
 Please don't change anything below this point.
 """
+import numpy as np
+import scipy.io
+
 year_min: int = INPUT_TIME['year_min']
 year_max: int = INPUT_TIME['year_max']
 year2find: int = INPUT_TIME['year2find']
@@ -131,3 +133,16 @@ if(MLR_go == True):
 if(SSOM_go == True):
     SSOMnr: str = INPUT_METHOD_SSOM['SSOMnr']
     nnnumber: int = INPUT_METHOD_SSOM['nnnumber']
+
+
+#========LOAD DATA====
+data_aco2: np.ndarray = scipy.io.loadmat(PATH_DATA_ACO2, appendmat=False)['aco2']
+data_mld: np.ndarray = scipy.io.loadmat(PATH_DATA_MLD, appendmat=False)['mld']
+data_pco2_taka: np.ndarray = scipy.io.loadmat(PATH_DATA_PCO2TAKA,
+                                    appendmat=False)['pco2_taka']
+data_sss: np.ndarray = scipy.io.loadmat(PATH_DATA_SSS, appendmat=False)['sss']
+data_sst: np.ndarray = scipy.io.loadmat(PATH_DATA_SST, appendmat=False)['sst']
+data_chl: np.ndarray = scipy.io.loadmat(PATH_DATA_CHL, appendmat=False)['chl']
+
+data_lat: np.ndarray = np.tile(np.linspace(-89.5, 89.5, 180), (360, 1)).T
+data_lon: np.ndarray = np.tile(np.linspace(-179.5, 179.5, 360), (180, 1))
