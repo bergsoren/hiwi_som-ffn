@@ -31,21 +31,27 @@ def run() -> None:
     """TODO. The data is in the format [months
     latitude longitude] = 480x180x360. V2 used: ECCO, Raynolds, Globalviev, Taka, Globecolor.
     """
-    data_aco2 = scipy.io.loadmat(settings.PATH_DATA_ACO2, appendmat=False)['ac02']
+    data_aco2 = scipy.io.loadmat(settings.PATH_DATA_ACO2, appendmat=False)['aco2']
     data_mld = scipy.io.loadmat(settings.PATH_DATA_MLD, appendmat=False)['mld']
     data_pco2_taka = scipy.io.loadmat(settings.PATH_DATA_PCO2TAKA,
                                     appendmat=False)['pco2_taka']
     data_sss = scipy.io.loadmat(settings.PATH_DATA_SSS, appendmat=False)['sss']
     data_sst = scipy.io.loadmat(settings.PATH_DATA_SST, appendmat=False)['sst']
     data_chl = scipy.io.loadmat(settings.PATH_DATA_CHL, appendmat=False)['chl']
-    #TODO: load('output/BIOMEoutput_SOCAT/networks/SOM_biome_4x4.mat');
 
-    # data_lat = scipy.io.loadmat(settings.PATH_DATA_LAT, appendmat=False)['latsst']
-    # data_lon = scipy.io.loadmat(settings.PATH_DATA_LON, appendmat=False)['lonsst']
-    # TODO: add from STEP1
+    data_STEP1_biomes = scipy.io.loadmat('SOM_biome_4x4.mat', appendmat=False)['biomes']
 
+    data_lat: np.ndarray = np.tile(np.linspace(-89.5, 89.5, 180), (360, 1)).T
+    data_lon: np.ndarray = np.tile(np.linspace(-179.5, 179.5, 360), (180, 1))
+    """data_lat and data_lon are both 180x360 arrays with data_lat[i, :]
+    containing the latidude in degrees from -89.5 to 89.5 and data_lon[:, i]
+    containing the longitude in degrees from -179.5 to 179.5.
+    """
 
-    #========2) take 20-year average====
+    for year2go in settings.year_output:
+        print(year2go)
+    #========The first parameter is SST====
+        
 
 
 
@@ -55,6 +61,11 @@ def run() -> None:
 if __name__ == '__main__':
     print('-----------------------------------------------------------------')
     print('Thanks for using this script!')
+    print('While this script works just fine by directly running it,')
+    print('it is optimised to be used in i.e. a jupyter notebook!', end='\n\n')
+    print('Try')
+    print('import name')
+    print('where name.py is the name of this script.')
     print('-----------------------------------------------------------------')
     run()
 if __name__ != '__main__':
