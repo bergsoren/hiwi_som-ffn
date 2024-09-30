@@ -71,8 +71,8 @@ in years."""
 #========STEP2====
 """Define basin.
 """
-STEP2_OCEAN: str = 'Global'
-"""Please enter 'Atlantic' or 'Global'."""
+STEP2_OCEAN_GLOBAL: bool = True
+"""Please enter 'False' for Atlantic or 'True' for Global."""
 STEP2_DEACTIVATE_TESTNUM: str = 'no'
 """'yes' or 'no'"""
 STEP2_VAL_CHECK_ONLY: str = 'no'
