@@ -73,10 +73,15 @@ def run() -> None:
             dataset[:, 4][dataset[:, 4] < -90] = np.nan
             dataset[:, 4][dataset[:, 4] > 30] = np.nan
 
-
         return dataset
     
-    """LData"""
+    """LData
+    data[:, 0] = year, data[:, 1] = month, data[:, 2] = lat, data[:, 3] = lon,
+    data[:, 4] = sst, data[:, 5] = mld, data[:, 6] = chl, data[:, 7] = sss, 
+    data[:, 8] = atm co2, data[:, 9] = takahashi clim, data[:, 10] = sst anom,
+    data[:, 11] = mld anom, data[:, 12] = chl anom, data[:, 13] = sss anom,
+    data[:, 14] = atm co2 anom, data[:, 15] = pco2 socat, data[:, 16] = biomes.
+    """
     print('-----------------------------------------------------------------')
     print('Loading LData.')
     print('...')
@@ -90,11 +95,18 @@ def run() -> None:
 
     ldata_unfiltered = scipy.io.loadmat(ldata_path, appendmat=False)[f'Ldata_{year}_coincided_v2']
     ldata.append(clear_dataset(ldata_unfiltered))
+    ldata = np.array(ldata)
     
     print('LData loaded.')
     print('-----------------------------------------------------------------')
 
-    """TData"""
+    """TData
+    data[:, 0] = year, data[:, 1] = month, data[:, 2] = lat, data[:, 3] = lon,
+    data[:, 4] = sst, data[:, 5] = mld, data[:, 6] = chl, data[:, 7] = sss, 
+    data[:, 8] = atm co2, data[:, 9] = takahashi clim, data[:, 10] = sst anom,
+    data[:, 11] = mld anom, data[:, 12] = chl anom, data[:, 13] = sss anom,
+    data[:, 14] = atm co2 anom, data[:, 15] = pco2 socat, data[:, 16] = biomes.
+    """
     print('-----------------------------------------------------------------')
     print('Loading TData.')
     print('...')
@@ -108,13 +120,79 @@ def run() -> None:
 
     tdata_unfiltered = scipy.io.loadmat(tdata_path, appendmat=False)[f'Tdata_{year}']
     tdata.append(clear_dataset(tdata_unfiltered))
+    tdata = np.array(tdata)
     
     print('TData loaded.')
     print('-----------------------------------------------------------------')
 
 
     #========3) NAN's of both labelling and training data have to be removed====
+    debug.message(ldata.shape)
+    debug.message(1/0)
+    ldata_nan_index: np.ndarray = (np.isnan(ldata[:, 4]) #sst
+                 | np.isnan(ldata[:, 5]) #mld
+                 | np.isnan(ldata[:, 6]) #chl
+                 | np.isnan(ldata[:, 7]) #sss
+                 | np.isnan(ldata[:, 8]) #atm co2
+                 | np.isnan(ldata[:, 10]) #sst anom
+                 | np.isnan(ldata[:, 12]) #chl anom
+                 | np.isnan(ldata[:, 13]) #sss aom
+                 | np.isnan(ldata[:, 14])) #atm co2 anom
+    """ldata_nan_index is True where either one of the data sets has a NaN.
+    """
+    label_ffn: np.ndarray = np.array([ldata[:, 4][~ldata_nan_index], #sst
+                        ldata[:, 5][~ldata_nan_index], #mld
+                        ldata[:, 6][~ldata_nan_index], #chl
+                        ldata[:, 7][~ldata_nan_index], #sss
+                        ldata[:, 8][~ldata_nan_index], #atm co2
+                        ldata[:, 10][~ldata_nan_index], #sst anom
+                        ldata[:, 12][~ldata_nan_index], #chl anom
+                        ldata[:, 13][~ldata_nan_index], #sss aom
+                        ldata[:, 14][~ldata_nan_index]]).T #atm co2 anom
+    """label_ffn is the labelling data sets with removed NaNs.
+    """
+
+    tdata_nan_index: np.ndarray = (np.isnan(tdata[:, 4]) #sst
+                 | np.isnan(tdata[:, 5]) #mld
+                 | np.isnan(tdata[:, 6]) #chl
+                 | np.isnan(tdata[:, 7]) #sss
+                 | np.isnan(tdata[:, 8]) #atm co2
+                 | np.isnan(tdata[:, 10]) #sst anom
+                 | np.isnan(tdata[:, 12]) #chl anom
+                 | np.isnan(tdata[:, 13]) #sss aom
+                 | np.isnan(tdata[:, 14])) #atm co2 anom
+    """tdata_nan_index is True where either one of the data sets has a NaN.
+    """
+    train_ffn: np.ndarray = np.array([tdata[:, 4][~tdata_nan_index], #sst
+                        tdata[:, 5][~tdata_nan_index], #mld
+                        tdata[:, 6][~tdata_nan_index], #chl
+                        tdata[:, 7][~tdata_nan_index], #sss
+                        tdata[:, 8][~tdata_nan_index], #atm co2
+                        tdata[:, 10][~tdata_nan_index], #sst anom
+                        tdata[:, 12][~tdata_nan_index], #chl anom
+                        tdata[:, 13][~tdata_nan_index], #sss aom
+                        tdata[:, 14][~tdata_nan_index]]).T #atm co2 anom
+    """train_ffn is the training data sets with removed NaNs.
+    """
+
+    data_fCO2 = ldata[:, 15][~ldata_nan_index]
+
+    data_l_month = ldata[:, 1][~ldata_nan_index]
+    data_l_year = ldata[:, 0][~ldata_nan_index]
+    data_t_month = tdata[:, 1][~tdata_nan_index]
+    data_t_year = tdata[:, 0][~tdata_nan_index]
+
+    data_l_lat = ldata[:, 2][~ldata_nan_index]
+    data_l_lon = ldata[:, 3][~ldata_nan_index]
+    data_t_lat = tdata[:, 2][~tdata_nan_index]
+    data_t_lon = tdata[:, 3][~tdata_nan_index]
+
+    data_l_classes = ldata[:, 16][~ldata_nan_index]
+    data_t_classes = tdata[:, 16][~tdata_nan_index]
+
     
+    
+
 
 
 
