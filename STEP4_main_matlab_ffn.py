@@ -85,17 +85,16 @@ def run() -> None:
     print('-----------------------------------------------------------------')
     print('Loading LData.')
     print('...')
-    ldata = []
-    for year in settings.year_output:
+    ldata = np.empty((0,17))
+    for year in np.arange(settings.year_min, settings.year_max):#TODO: change back to for year in settings.year_output:
         print(year)
         if(ocean_global == True):
             ldata_path = f'interim_output/Ldata/Ldata_{year}_v2023.mat'
         else:
             ldata_path = f'interim_output/Ldata/Ldata_{year}_coincided_v2.mat'
 
-    ldata_unfiltered = scipy.io.loadmat(ldata_path, appendmat=False)[f'Ldata_{year}_coincided_v2']
-    ldata.append(clear_dataset(ldata_unfiltered))
-    ldata = np.array(ldata)
+        ldata_unfiltered = scipy.io.loadmat(ldata_path, appendmat=False)[f'Ldata_{year}_coincided_v2']
+        ldata = np.append(ldata, clear_dataset(ldata_unfiltered), axis=0)
     
     print('LData loaded.')
     print('-----------------------------------------------------------------')
@@ -110,7 +109,7 @@ def run() -> None:
     print('-----------------------------------------------------------------')
     print('Loading TData.')
     print('...')
-    tdata = []
+    tdata = np.empty((0,17))
     for year in settings.year_output:
         print(year)
         if(ocean_global == True):
@@ -118,17 +117,16 @@ def run() -> None:
         else:
             tdata_path = f'interim_output/Tdata/Tdata_{year}V2.mat'
 
-    tdata_unfiltered = scipy.io.loadmat(tdata_path, appendmat=False)[f'Tdata_{year}']
-    tdata.append(clear_dataset(tdata_unfiltered))
-    tdata = np.array(tdata)
+        tdata_unfiltered = scipy.io.loadmat(tdata_path, appendmat=False)[f'Tdata_{year}']
+        tdata = np.append(tdata, clear_dataset(tdata_unfiltered), axis=0)
     
     print('TData loaded.')
     print('-----------------------------------------------------------------')
 
 
     #========3) NAN's of both labelling and training data have to be removed====
-    debug.message(ldata.shape)
-    debug.message(1/0)
+    debug.message(f"{ldata.shape=}{tdata.shape=}")
+    
     ldata_nan_index: np.ndarray = (np.isnan(ldata[:, 4]) #sst
                  | np.isnan(ldata[:, 5]) #mld
                  | np.isnan(ldata[:, 6]) #chl
