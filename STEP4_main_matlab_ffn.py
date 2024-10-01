@@ -125,8 +125,8 @@ def run() -> None:
 
 
     #========3) NAN's of both labelling and training data have to be removed====
-    debug.message(f"{ldata.shape=}{tdata.shape=}")
-    
+    debug.message(f"{ldata.shape=}, {tdata.shape=}")
+
     ldata_nan_index: np.ndarray = (np.isnan(ldata[:, 4]) #sst
                  | np.isnan(ldata[:, 5]) #mld
                  | np.isnan(ldata[:, 6]) #chl
@@ -188,8 +188,18 @@ def run() -> None:
     data_l_classes = ldata[:, 16][~ldata_nan_index]
     data_t_classes = tdata[:, 16][~tdata_nan_index]
 
+    # debug.message(f"{label_ffn.shape=}, {train_ffn.shape=}")
+    # debug.message(f"{data_fCO2.shape=}")
+    # debug.message(f"{data_l_month.shape=}, {data_l_year.shape=}, {data_l_lat.shape=}, {data_l_lon.shape=}, {data_l_classes.shape=}")
+    # debug.message(f"{data_t_month.shape=}, {data_t_year.shape=}, {data_t_lat.shape=}, {data_t_lon.shape=}, {data_t_classes.shape=}")
     
+    content = np.unique(data_l_classes)
+    content = np.append(content, np.nan) #this seems completely unnecessary, this is just to match the original code
+    debug.message(content)
+    debug.message(content.shape)
     
+
+    #========4) Backprop part for every Neuron====
 
 
 
