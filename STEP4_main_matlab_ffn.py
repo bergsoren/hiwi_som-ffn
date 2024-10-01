@@ -14,6 +14,7 @@ Max-Planck-Institut für Meteorologie, Hamburg
 #========IMPORTS====
 import numpy as np
 import scipy.io
+import torch
 
 import time
 
@@ -138,7 +139,7 @@ def run() -> None:
                  | np.isnan(ldata[:, 14])) #atm co2 anom
     """ldata_nan_index is True where either one of the data sets has a NaN.
     """
-    label_ffn: np.ndarray = np.array([ldata[:, 4][~ldata_nan_index], #sst
+    data_label: np.ndarray = np.array([ldata[:, 4][~ldata_nan_index], #sst
                         ldata[:, 5][~ldata_nan_index], #mld
                         ldata[:, 6][~ldata_nan_index], #chl
                         ldata[:, 7][~ldata_nan_index], #sss
@@ -147,7 +148,7 @@ def run() -> None:
                         ldata[:, 12][~ldata_nan_index], #chl anom
                         ldata[:, 13][~ldata_nan_index], #sss aom
                         ldata[:, 14][~ldata_nan_index]]).T #atm co2 anom
-    """label_ffn is the labelling data sets with removed NaNs.
+    """data_label is the labelling data sets with removed NaNs.
     """
 
     tdata_nan_index: np.ndarray = (np.isnan(tdata[:, 4]) #sst
@@ -161,7 +162,7 @@ def run() -> None:
                  | np.isnan(tdata[:, 14])) #atm co2 anom
     """tdata_nan_index is True where either one of the data sets has a NaN.
     """
-    train_ffn: np.ndarray = np.array([tdata[:, 4][~tdata_nan_index], #sst
+    data_train: np.ndarray = np.array([tdata[:, 4][~tdata_nan_index], #sst
                         tdata[:, 5][~tdata_nan_index], #mld
                         tdata[:, 6][~tdata_nan_index], #chl
                         tdata[:, 7][~tdata_nan_index], #sss
@@ -170,7 +171,7 @@ def run() -> None:
                         tdata[:, 12][~tdata_nan_index], #chl anom
                         tdata[:, 13][~tdata_nan_index], #sss aom
                         tdata[:, 14][~tdata_nan_index]]).T #atm co2 anom
-    """train_ffn is the training data sets with removed NaNs.
+    """data_train is the training data sets with removed NaNs.
     """
 
     data_fCO2 = ldata[:, 15][~ldata_nan_index]
@@ -188,18 +189,29 @@ def run() -> None:
     data_l_classes = ldata[:, 16][~ldata_nan_index]
     data_t_classes = tdata[:, 16][~tdata_nan_index]
 
-    # debug.message(f"{label_ffn.shape=}, {train_ffn.shape=}")
+    # debug.message(f"{data_label.shape=}, {data_train.shape=}")
     # debug.message(f"{data_fCO2.shape=}")
     # debug.message(f"{data_l_month.shape=}, {data_l_year.shape=}, {data_l_lat.shape=}, {data_l_lon.shape=}, {data_l_classes.shape=}")
     # debug.message(f"{data_t_month.shape=}, {data_t_year.shape=}, {data_t_lat.shape=}, {data_t_lon.shape=}, {data_t_classes.shape=}")
     
     content = np.unique(data_l_classes)
-    content = np.append(content, np.nan) #this seems completely unnecessary, this is just to match the original code
+    content = content[~np.isnan(content)]
     debug.message(content)
     debug.message(content.shape)
     
 
     #========4) Backprop part for every Neuron====
+    for biome in content:
+        ffn_training_classes = data_t_classes[biome==data_t_classes]
+        ffn_training_data = data_train[biome==data_t_classes]
+        ffn_training_month = data_t_month[biome==data_t_classes]
+        ffn_training_year = data_t_year[biome==data_t_classes]
+        ffn_training_lat = data_t_lat[biome==data_t_classes]
+        ffn_training_lon = data_t_lon[biome==data_t_classes]
+
+        ffn_labelling_data = data_label[biome==data_l_classes]
+        ffn_fCO2 = data_fCO2[biome==data_l_classes]
+        
 
 
 
