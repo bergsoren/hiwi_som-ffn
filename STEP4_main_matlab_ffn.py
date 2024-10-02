@@ -255,19 +255,17 @@ def run() -> None:
         # net([ffn_labelling_data])
         # criterion = torch.nn.MSELoss()
 
-    matlab_pco2_sim = scipy.io.loadmat('ffnoutput_pCO2.mat', appendmat=False)['data_all']
-    debug.message(matlab_pco2_sim.shape)
+    #matlab_pco2_sim = scipy.io.loadmat('ffnoutput_pCO2.mat', appendmat=False)['data_all']
+    step4_plot_data_pco2 = scipy.io.loadmat('step4_plot_data_pco2.mat', appendmat=False)['step4_plot_data_pco2']
+    step4_plot_data_bgcmean = scipy.io.loadmat('step4_plot_data_bgcmean.mat', appendmat=False)['step4_plot_data_bgcmean']
 
-    s_longs = [[-100, 43], [-75, 20], [20, 145], [43, 100], [145, 295], [100, 295]]
-    s_lats = [[0, 90], [-90, 0], [-90, 0], [0, 90], [-90, 0], [0, 90]]
     plt_show = True
     if(plt_show):
-        for i in np.arange(6):
-            ax: cartopy.mpl.geoaxes.GeoAxes = plt.axes(projection=ccrs.Mollweide(
-                central_longitude=0, globe=None, false_easting=None, false_northing=None))
-            ax.coastlines()
-            cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
-            plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(settings.data_lon[0], settings.data_lat[:, 0], np.squeeze(np.nanmean(matlab_pco2_sim), axis=0), np.arange(0, 16.1, 1), cmap=cmap)
+        ax: cartopy.mpl.geoaxes.GeoAxes = plt.axes(projection=ccrs.InterruptedGoodeHomolosine(
+            central_longitude=0, globe=None, emphasis='ocean'))
+        ax.coastlines()
+        cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
+        plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(settings.data_lon[0], settings.data_lat[:, 0], step4_plot_data_pco2, np.arange(0, 16.1, 1), cmap=cmap)
         plt.colorbar(plot)
         plt.show()
 
