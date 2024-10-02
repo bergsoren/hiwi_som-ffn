@@ -85,6 +85,7 @@ STEP2_PERFORMANCE_FUNCTION: str = 'mse'
 """Loading the configured variables from the settings script.
 Please don't change anything below this point.
 """
+import matplotlib.colors
 import numpy as np
 import scipy.io
 
@@ -154,3 +155,6 @@ data_chl: np.ndarray = scipy.io.loadmat(PATH_DATA_CHL, appendmat=False)['chl']
 
 data_lat: np.ndarray = np.tile(np.linspace(-89.5, 89.5, 180), (360, 1)).T
 data_lon: np.ndarray = np.tile(np.linspace(-179.5, 179.5, 360), (180, 1))
+
+
+colormap = matplotlib.colors.ListedColormap(np.loadtxt('cm.txt'))

@@ -168,7 +168,8 @@ def run(som_epochnr: int = settings.INPUT_METHOD_SOM_OR_BIOME['epochnr'],
     if(plt_show):
         ax: cartopy.mpl.geoaxes.GeoAxes = plt.axes(projection=ccrs.PlateCarree())
         ax.coastlines()
-        cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
+        #cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
+        cmap: matplotlib.colors.ListedColormap = settings.colormap.with_extremes(under='white')
         plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(data_lon[0], data_lat[:, 0], biomes, np.arange(0, 16.1, 1), cmap=cmap)
         plt.colorbar(plot)
         plt.show()
