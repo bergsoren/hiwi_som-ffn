@@ -272,10 +272,10 @@ def run() -> None:
     plt_show = True
     if(plt_show):
         ax: cartopy.mpl.geoaxes.GeoAxes = plt.axes(projection=ccrs.InterruptedGoodeHomolosine(
-            central_longitude=0, globe=None, emphasis='ocean'))
+            central_longitude=-160, globe=None, emphasis='ocean'))
         ax.coastlines()
         cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
-        plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(settings.data_lon[0], settings.data_lat[:, 0], step4_plot_data_pco2, cmap=cmap)
+        plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(settings.data_lon[0], settings.data_lat[:, 0], step4_plot_data_pco2, cmap=cmap, transform=ccrs.PlateCarree())
         plt.colorbar(plot)
         plt.show()
 
