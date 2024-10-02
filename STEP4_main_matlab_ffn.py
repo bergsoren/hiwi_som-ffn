@@ -259,16 +259,27 @@ def run() -> None:
     step4_plot_data_pco2 = scipy.io.loadmat('step4_plot_data_pco2.mat', appendmat=False)['step4_plot_data_pco2']
     step4_plot_data_bgcmean = scipy.io.loadmat('step4_plot_data_bgcmean.mat', appendmat=False)['step4_plot_data_bgcmean']
 
+    # lon = settings.data_lon[0]
+    # lat = settings.data_lat[:, 0]
+    # double_lon = np.empty(360*2)
+    # double_lon[0:360] = lon
+    # double_lon[360:360*2] = lon+360
+    # double_data = np.empty([180, 360*2])
+    # double_data[:, 0:360] = step4_plot_data_pco2
+    # double_data[:, 360:360*2] = step4_plot_data_pco2
+    # debug.message(double_data.shape)
+
     plt_show = True
     if(plt_show):
         ax: cartopy.mpl.geoaxes.GeoAxes = plt.axes(projection=ccrs.InterruptedGoodeHomolosine(
             central_longitude=0, globe=None, emphasis='ocean'))
         ax.coastlines()
         cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
-        plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(settings.data_lon[0], settings.data_lat[:, 0], step4_plot_data_pco2, np.arange(0, 16.1, 1), cmap=cmap)
+        plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(settings.data_lon[0], settings.data_lat[:, 0], step4_plot_data_pco2, cmap=cmap)
         plt.colorbar(plot)
         plt.show()
 
+    return step4_plot_data_pco2
 
 
 
