@@ -15,6 +15,10 @@ Max-Planck-Institut für Meteorologie, Hamburg
 import numpy as np
 import scipy.io
 import torch
+import matplotlib.pyplot as plt
+import matplotlib
+import cartopy.crs as ccrs
+import cartopy
 
 import time
 
@@ -250,6 +254,18 @@ def run() -> None:
         # debug.message(ffn_labelling_data.shape)
         # net([ffn_labelling_data])
         # criterion = torch.nn.MSELoss()
+
+        matlab_pco2_sim = scipy.io.loadmat('ffnoutput_pCO2.mat', appendmat=False)['data_all']
+        debug.message(matlab_pco2_sim.shape)
+        plt_show = True
+        if(plt_show):
+            ax: cartopy.mpl.geoaxes.GeoAxes = plt.axes(projection=ccrs.PlateCarree())
+            ax.coastlines()
+            cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
+            plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(settings.data_lon[0], settings.data_lat[:, 0], np.squeeze(np.nanmean(matlab_pco2_sim)), np.arange(0, 16.1, 1), cmap=cmap)
+            plt.colorbar(plot)
+            plt.show()
+
 
 
 
