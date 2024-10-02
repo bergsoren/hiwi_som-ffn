@@ -255,16 +255,21 @@ def run() -> None:
         # net([ffn_labelling_data])
         # criterion = torch.nn.MSELoss()
 
-        matlab_pco2_sim = scipy.io.loadmat('ffnoutput_pCO2.mat', appendmat=False)['data_all']
-        debug.message(matlab_pco2_sim.shape)
-        plt_show = True
-        if(plt_show):
-            ax: cartopy.mpl.geoaxes.GeoAxes = plt.axes(projection=ccrs.PlateCarree())
+    matlab_pco2_sim = scipy.io.loadmat('ffnoutput_pCO2.mat', appendmat=False)['data_all']
+    debug.message(matlab_pco2_sim.shape)
+
+    s_longs = [[-100, 43], [-75, 20], [20, 145], [43, 100], [145, 295], [100, 295]]
+    s_lats = [[0, 90], [-90, 0], [-90, 0], [0, 90], [-90, 0], [0, 90]]
+    plt_show = True
+    if(plt_show):
+        for i in np.arange(6):
+            ax: cartopy.mpl.geoaxes.GeoAxes = plt.axes(projection=ccrs.Mollweide(
+                central_longitude=0, globe=None, false_easting=None, false_northing=None))
             ax.coastlines()
             cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
-            plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(settings.data_lon[0], settings.data_lat[:, 0], np.squeeze(np.nanmean(matlab_pco2_sim)), np.arange(0, 16.1, 1), cmap=cmap)
-            plt.colorbar(plot)
-            plt.show()
+            plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(settings.data_lon[0], settings.data_lat[:, 0], np.squeeze(np.nanmean(matlab_pco2_sim), axis=0), np.arange(0, 16.1, 1), cmap=cmap)
+        plt.colorbar(plot)
+        plt.show()
 
 
 
