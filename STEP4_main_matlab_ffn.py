@@ -126,7 +126,7 @@ def run() -> None:
 
 
     #========3) NAN's of both labelling and training data have to be removed====
-    debug.message(f"{ldata.shape=}, {tdata.shape=}")
+    # debug.message(f"{ldata.shape=}, {tdata.shape=}")
 
     ldata_nan_index: np.ndarray = (np.isnan(ldata[:, 4]) #sst
                  | np.isnan(ldata[:, 5]) #mld
@@ -196,8 +196,8 @@ def run() -> None:
     
     content = np.unique(data_l_classes)
     content = content[~np.isnan(content)]
-    debug.message(content)
-    debug.message(content.shape)
+    # debug.message(content)
+    # debug.message(content.shape)
     
 
     #========4) Backprop part for every Neuron====
@@ -212,6 +212,44 @@ def run() -> None:
         ffn_labelling_data = data_label[biome==data_l_classes]
         ffn_fCO2 = data_fCO2[biome==data_l_classes]
         
+        # batch_size = 100
+        # n_iters = 44640 #thats for num_epochs to be 200 as it was in the SOM in the matlab code
+        # num_epochs = n_iters / (ffn_training_data.size / batch_size)
+        # num_epochs = int(num_epochs)
+
+        # train_loader = torch.utils.data.DataLoader(dataset=ffn_training_data, 
+        #                                         batch_size=batch_size, 
+        #                                         shuffle=True)
+
+        # test_loader = torch.utils.data.DataLoader(dataset=ffn_labelling_data, 
+        #                                         batch_size=batch_size, 
+        #                                         shuffle=False)
+
+        # ffn_input_dim = ffn_labelling_data.size
+        # ffn_hidden_dim = 512#in matlab 25 is used
+        # ffn_output_dim = 1
+
+        # device = ("cuda" if torch.cuda.is_available() else "cpu")
+        # print(f"Using {device} device")
+        # class FFN(torch.nn.Module):
+        #     def __init__(self):
+        #         super().__init__()
+        #         self.flatten = torch.nn.Flatten()
+        #         self.ffn_stack = torch.nn.Sequential(
+        #             torch.nn.Linear(ffn_input_dim, ffn_hidden_dim),
+        #             torch.nn.ReLU(),
+        #             torch.nn.Linear(ffn_hidden_dim, ffn_output_dim)
+        #         )
+
+        #     def forward(self, x):
+        #         x = self.flatten(x)
+        #         logits = self.ffn_stack(x)
+        #         return logits
+            
+        # net = FFN().to(device)
+        # debug.message(ffn_labelling_data.shape)
+        # net([ffn_labelling_data])
+        # criterion = torch.nn.MSELoss()
 
 
 
