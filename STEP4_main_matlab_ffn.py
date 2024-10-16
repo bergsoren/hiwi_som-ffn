@@ -272,15 +272,29 @@ def run() -> None:
     plt_show = True
     plot_data = [step4_plot_data_pco2, step4_plot_data_bgcmean]
     if(plt_show):
-        for i in range(2):
-            ax: cartopy.mpl.geoaxes.GeoAxes = plt.axes(projection=ccrs.InterruptedGoodeHomolosine(
-                central_longitude=-160, globe=None, emphasis='ocean'))
-            ax.coastlines()
-            #cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
-            cmap: matplotlib.colors.ListedColormap = settings.colormap.with_extremes(under='white')
-            plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(settings.data_lon[0], settings.data_lat[:, 0], plot_data[i], cmap=cmap, transform=ccrs.PlateCarree())
-            plt.colorbar(plot)
-            plt.show()
+        # pco2 plot
+        ax: cartopy.mpl.geoaxes.GeoAxes = plt.axes(projection=ccrs.InterruptedGoodeHomolosine(
+            central_longitude=-160, globe=None, emphasis='ocean'))
+        ax.coastlines()
+        #cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
+        cmap: matplotlib.colors.ListedColormap = settings.colormap.with_extremes(under='white')
+        plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(
+            settings.data_lon[0], settings.data_lat[:, 0], plot_data[0], 
+            np.arange(250, 400, 1), cmap=cmap, transform=ccrs.PlateCarree())
+        plt.colorbar(plot)
+        plt.show()
+
+        # bgcmean plot
+        ax: cartopy.mpl.geoaxes.GeoAxes = plt.axes(projection=ccrs.InterruptedGoodeHomolosine(
+            central_longitude=-160, globe=None, emphasis='ocean'))
+        ax.coastlines()
+        #cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
+        cmap: matplotlib.colors.ListedColormap = settings.colormap.with_extremes(under='white')
+        plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(
+            settings.data_lon[0], settings.data_lat[:, 0], plot_data[1], 
+            np.arange(0, 16.1, 1), cmap=cmap, transform=ccrs.PlateCarree())
+        plt.colorbar(plot)
+        plt.show()
 
     return plot_data
 
