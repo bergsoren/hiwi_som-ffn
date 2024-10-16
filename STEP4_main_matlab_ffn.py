@@ -216,6 +216,49 @@ def run() -> None:
         ffn_labelling_data = data_label[biome==data_l_classes]
         ffn_fCO2 = data_fCO2[biome==data_l_classes]
         
+
+        """https://www.youtube.com/watch?v=YAJ5XBwlN4o
+        0) Prepare data
+        1) Design model (input, output size, forward pass)
+        2) Construct loss and optimizer
+        3) Training loop
+            - forward pass: compute prediction and loss
+            - backward pass: gradients
+            - update weights
+        """
+
+        #1) Design model (input, output size, forward pass)
+        ffn_x = torch.from_numpy(ffn_training_data.astype(np.float32))#?
+        ffn_y = torch.from_numpy(ffn_fCO2.astype(np.float32))#?#?
+        ffn_n_samples = ffn_x.shape[0]
+        ffn_n_features = ffn_x.shape[1]
+        ffn_hidden_dim = 64#in matlab 25 is used
+        ffn_output_dim = 1
+
+        device = ("cuda" if torch.cuda.is_available() else "cpu")
+        print(f"Using {device} device")
+        class FFN(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.model = torch.nn.Sequential(
+                    torch.nn.Linear(ffn_n_features, ffn_hidden_dim),
+                    torch.nn.ReLU(),
+                    torch.nn.Linear(ffn_hidden_dim, ffn_output_dim)
+                )
+            def forward(self, x):
+                logits = self.model(x)
+                return logits
+            
+        ffn = FFN().to(device)
+        # debug.message(ffn_labelling_data.shape)
+        # net([ffn_labelling_data])
+
+        #2) Construct loss and optimizer
+        learning_rate = 0.01
+        criterion = torch.nn.MSELoss()
+        optimizer = torch.optim.SGD(ffn.parameters(), lr=learning_rate)
+
+        #3) Training loop
         # batch_size = 100
         # n_iters = 44640 #thats for num_epochs to be 200 as it was in the SOM in the matlab code
         # num_epochs = n_iters / (ffn_training_data.size / batch_size)
@@ -228,33 +271,23 @@ def run() -> None:
         # test_loader = torch.utils.data.DataLoader(dataset=ffn_labelling_data, 
         #                                         batch_size=batch_size, 
         #                                         shuffle=False)
+        num_epochs = 200
+        for epoch in range(num_epochs):
+            #forward pass and loss
+            ffn_y_predicted = ffn(ffn_x)
+            loss = criterion(ffn_y_predicted, ffn_y)
+            #backward pass: gradients
+            loss.backward()
+            #update weights
+            optimizer.step()
+            optimizer.zero_grad()
 
-        # ffn_input_dim = ffn_labelling_data.size
-        # ffn_hidden_dim = 512#in matlab 25 is used
-        # ffn_output_dim = 1
+            if((epoch+1) % 10 == 0):
+                print(f'epoch: {epoch+1}, loss = {loss.item():.4f}')
 
-        # device = ("cuda" if torch.cuda.is_available() else "cpu")
-        # print(f"Using {device} device")
-        # class FFN(torch.nn.Module):
-        #     def __init__(self):
-        #         super().__init__()
-        #         self.flatten = torch.nn.Flatten()
-        #         self.ffn_stack = torch.nn.Sequential(
-        #             torch.nn.Linear(ffn_input_dim, ffn_hidden_dim),
-        #             torch.nn.ReLU(),
-        #             torch.nn.Linear(ffn_hidden_dim, ffn_output_dim)
-        #         )
 
-        #     def forward(self, x):
-        #         x = self.flatten(x)
-        #         logits = self.ffn_stack(x)
-        #         return logits
-            
-        # net = FFN().to(device)
-        # debug.message(ffn_labelling_data.shape)
-        # net([ffn_labelling_data])
-        # criterion = torch.nn.MSELoss()
-
+    step4_ffn_output = ffn(ffn_x).detach().numpy()
+    debug.message(1/0)
     #matlab_pco2_sim = scipy.io.loadmat('ffnoutput_pCO2.mat', appendmat=False)['data_all']
     step4_plot_data_pco2 = scipy.io.loadmat('step4_plot_data_pco2.mat', appendmat=False)['step4_plot_data_pco2']
     step4_plot_data_bgcmean = scipy.io.loadmat('step4_plot_data_bgcmean.mat', appendmat=False)['step4_plot_data_bgcmean']
