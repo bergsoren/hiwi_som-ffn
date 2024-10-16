@@ -276,8 +276,8 @@ def run() -> None:
         ax: cartopy.mpl.geoaxes.GeoAxes = plt.axes(projection=ccrs.InterruptedGoodeHomolosine(
             central_longitude=-160, globe=None, emphasis='ocean'))
         ax.coastlines()
-        #cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
-        cmap: matplotlib.colors.ListedColormap = settings.colormap.with_extremes(under='white')
+        cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
+        #cmap: matplotlib.colors.ListedColormap = settings.colormap.with_extremes(under='white')
         plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(
             settings.data_lon[0], settings.data_lat[:, 0], plot_data[0], 
             np.arange(250, 400, 1), cmap=cmap, transform=ccrs.PlateCarree())
@@ -288,11 +288,11 @@ def run() -> None:
         ax: cartopy.mpl.geoaxes.GeoAxes = plt.axes(projection=ccrs.InterruptedGoodeHomolosine(
             central_longitude=-160, globe=None, emphasis='ocean'))
         ax.coastlines()
-        #cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
-        cmap: matplotlib.colors.ListedColormap = settings.colormap.with_extremes(under='white')
+        cmap: matplotlib.colors.ListedColormap = plt.colormaps['viridis'].with_extremes(under='white')
+        #cmap: matplotlib.colors.ListedColormap = settings.colormap.with_extremes(under='white')
         plot: cartopy.mpl.contour.GeoContourSet = ax.contourf(
             settings.data_lon[0], settings.data_lat[:, 0], plot_data[1], 
-            np.arange(0, 16.1, 1), cmap=cmap, transform=ccrs.PlateCarree())
+            np.arange(0.1, 16.1, 1), cmap=cmap, transform=ccrs.PlateCarree())
         plt.colorbar(plot)
         plt.show()
 
