@@ -143,6 +143,7 @@ def run() -> None:
                  | np.isnan(ldata[:, 14])) #atm co2 anom
     """ldata_nan_index is True where either one of the data sets has a NaN.
     """
+    # label -> training/validation
     data_label: np.ndarray = np.array([ldata[:, 4][~ldata_nan_index], #sst
                         ldata[:, 5][~ldata_nan_index], #mld
                         ldata[:, 6][~ldata_nan_index], #chl
@@ -166,6 +167,7 @@ def run() -> None:
                  | np.isnan(tdata[:, 14])) #atm co2 anom
     """tdata_nan_index is True where either one of the data sets has a NaN.
     """
+    # train -> generate maps at end
     data_train: np.ndarray = np.array([tdata[:, 4][~tdata_nan_index], #sst
                         tdata[:, 5][~tdata_nan_index], #mld
                         tdata[:, 6][~tdata_nan_index], #chl
@@ -226,10 +228,10 @@ def run() -> None:
             - backward pass: gradients
             - update weights
         """
-
+        #TODO normalize data!
         #1) Design model (input, output size, forward pass)
-        ffn_x = torch.from_numpy(ffn_training_data.astype(np.float32))#?
-        ffn_y = torch.from_numpy(ffn_fCO2.astype(np.float32))#?#?
+        ffn_x = torch.from_numpy(ffn_labelling_data.astype(np.float32))#?
+        ffn_y = torch.from_numpy(ffn_fCO2.astype(np.float32))#?
         ffn_n_samples = ffn_x.shape[0]
         ffn_n_features = ffn_x.shape[1]
         ffn_hidden_dim = 64#in matlab 25 is used
@@ -254,7 +256,7 @@ def run() -> None:
         # net([ffn_labelling_data])
 
         #2) Construct loss and optimizer
-        learning_rate = 0.01
+        learning_rate = 0.005
         criterion = torch.nn.MSELoss()
         optimizer = torch.optim.SGD(ffn.parameters(), lr=learning_rate)
 
@@ -272,11 +274,13 @@ def run() -> None:
         #                                         batch_size=batch_size, 
         #                                         shuffle=False)
         num_epochs = 200
+        # early stopping -> TODO
         for epoch in range(num_epochs):
             #forward pass and loss
             ffn_y_predicted = ffn(ffn_x)
             loss = criterion(ffn_y_predicted, ffn_y)
             #backward pass: gradients
+            # TODO Dropout check how many percent is used for backward
             loss.backward()
             #update weights
             optimizer.step()
@@ -287,6 +291,7 @@ def run() -> None:
 
 
     step4_ffn_output = ffn(ffn_x).detach().numpy()
+    #TODO validation -> print statement r^2 and other measures to check performance
     debug.message(1/0)
     #matlab_pco2_sim = scipy.io.loadmat('ffnoutput_pCO2.mat', appendmat=False)['data_all']
     step4_plot_data_pco2 = scipy.io.loadmat('step4_plot_data_pco2.mat', appendmat=False)['step4_plot_data_pco2']
