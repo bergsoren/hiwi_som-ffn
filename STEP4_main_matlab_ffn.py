@@ -9,16 +9,23 @@ University of East Anglia, Norwich
 Python version by:
 Søren Jakob Berger 13.09.2024
 Max-Planck-Institut für Meteorologie, Hamburg
+
+with code by and help for the NN from
+Maurie Keppens 05.12.2024
+Vlaams Instituut voor de Zee, Oostende
 """
 
 #========IMPORTS====
 import numpy as np
+import pandas as pd
 import scipy.io
-import torch
 import matplotlib.pyplot as plt
 import matplotlib
 import cartopy.crs as ccrs
 import cartopy
+import sklearn.model_selection
+
+import tensorflow as tf
 
 import time
 
@@ -208,6 +215,7 @@ def run() -> None:
 
     #========4) Backprop part for every Neuron====
     for biome in content:
+        print(f'Biome: {biome}')
         ffn_training_classes = data_t_classes[biome==data_t_classes]
         ffn_training_data = data_train[biome==data_t_classes]
         ffn_training_month = data_t_month[biome==data_t_classes]
@@ -218,7 +226,8 @@ def run() -> None:
         ffn_labelling_data = data_label[biome==data_l_classes]
         ffn_fCO2 = data_fCO2[biome==data_l_classes]
         
-
+        tf.random.set_seed(1)
+        #tf.debugging.set_log_device_placement(True)
         """https://www.youtube.com/watch?v=YAJ5XBwlN4o
         0) Prepare data
         1) Design model (input, output size, forward pass)
@@ -228,71 +237,118 @@ def run() -> None:
             - backward pass: gradients
             - update weights
         """
-        #TODO normalize data!
+        #0) Prepare data
+        data_ffn_training = ffn_labelling_data.astype(np.float32)
+        data_ffn_pco2 = ffn_fCO2.astype(np.float32)
+
+        X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(data_ffn_training, data_ffn_pco2, test_size=0.2)
+
+        # ffn_x_mean = ffn_x.mean(dim=0)
+        # ffn_x_std = ffn_x.std(dim=0)
+        # ffn_x = ffn_x - ffn_x_mean
+        # ffn_x = ffn_x / ffn_x_std
+
+        # ffn_y = ffn_y.view(ffn_y.shape[0], 1)
+
         #1) Design model (input, output size, forward pass)
-        ffn_x = torch.from_numpy(ffn_labelling_data.astype(np.float32))#?
-        ffn_y = torch.from_numpy(ffn_fCO2.astype(np.float32))#?
-        ffn_n_samples = ffn_x.shape[0]
-        ffn_n_features = ffn_x.shape[1]
-        ffn_hidden_dim = 64#in matlab 25 is used
+        ffn_n_samples = X_train.shape[0]
+        ffn_n_features = X_train.shape[1]
+        ffn_hidden_dim = 60#in matlab 25 is used
         ffn_output_dim = 1
 
-        device = ("cuda" if torch.cuda.is_available() else "cpu")
-        print(f"Using {device} device")
-        class FFN(torch.nn.Module):
-            def __init__(self):
-                super().__init__()
-                self.model = torch.nn.Sequential(
-                    torch.nn.Linear(ffn_n_features, ffn_hidden_dim),
-                    torch.nn.ReLU(),
-                    torch.nn.Linear(ffn_hidden_dim, ffn_output_dim)
-                )
-            def forward(self, x):
-                logits = self.model(x)
-                return logits
-            
-        ffn = FFN().to(device)
-        # debug.message(ffn_labelling_data.shape)
-        # net([ffn_labelling_data])
+        ffn_learning_rate = 0.005
+        ffn_num_epochs = 200
 
-        #2) Construct loss and optimizer
-        learning_rate = 0.005
-        criterion = torch.nn.MSELoss()
-        optimizer = torch.optim.SGD(ffn.parameters(), lr=learning_rate)
+        ffn_normalizer = tf.keras.layers.Normalization(axis=-1)
+        ffn_normalizer.adapt(X_train)
+
+        def build_and_compile_model():
+            model = tf.keras.Sequential([
+                ffn_normalizer,
+                tf.keras.layers.Dense(ffn_hidden_dim, activation='relu'),
+                tf.keras.layers.Dense(ffn_output_dim, activation= 'linear')
+            ])
+            #2) Construct loss and optimizer
+            model.compile(loss='mse', optimizer=tf.keras.optimizers.SGD(learning_rate=ffn_learning_rate), metrics=['R2Score'])
+            return model
+            
+        ffn = build_and_compile_model()
+        debug.message('model built')
+        ffn.summary()
+
+
+        ffn_callback = tf.keras.callbacks.EarlyStopping(
+            monitor="val_loss",
+            min_delta=0,
+            patience=6,
+            verbose=0,
+            mode="auto",
+            baseline=None,
+            restore_best_weights=True,
+            start_from_epoch=0
+        )
 
         #3) Training loop
-        # batch_size = 100
-        # n_iters = 44640 #thats for num_epochs to be 200 as it was in the SOM in the matlab code
-        # num_epochs = n_iters / (ffn_training_data.size / batch_size)
-        # num_epochs = int(num_epochs)
+        print('\n\nTraining started')
+        start_time = time.time()
 
-        # train_loader = torch.utils.data.DataLoader(dataset=ffn_training_data, 
-        #                                         batch_size=batch_size, 
-        #                                         shuffle=True)
+        ffn_history = ffn.fit(
+            X_train,
+            y_train,
+            validation_split=0.2,
+            verbose=2,
+            callbacks = [ffn_callback],
+            epochs=ffn_num_epochs
+        )
+        print(f'Training completed, {time.time()-start_time}s passed.\n\n')
 
-        # test_loader = torch.utils.data.DataLoader(dataset=ffn_labelling_data, 
-        #                                         batch_size=batch_size, 
-        #                                         shuffle=False)
-        num_epochs = 200
-        # early stopping -> TODO
-        for epoch in range(num_epochs):
-            #forward pass and loss
-            ffn_y_predicted = ffn(ffn_x)
-            loss = criterion(ffn_y_predicted, ffn_y)
-            #backward pass: gradients
-            # TODO Dropout check how many percent is used for backward
-            loss.backward()
-            #update weights
-            optimizer.step()
-            optimizer.zero_grad()
+        def plot_loss(history):
+            plt.plot(history.history['loss'], label='Training')
+            plt.plot(history.history['val_loss'], label='Internal validation')
+            #plt.ylim([25, 40])
+            plt.xlabel('Epoch')
+            plt.ylabel('Mean Squared Error')
+            plt.legend()
+            plt.grid(True)
+        plot_loss(ffn_history)
 
-            if((epoch+1) % 10 == 0):
-                print(f'epoch: {epoch+1}, loss = {loss.item():.4f}')
+        debug.message(f'{ffn.metrics_names=}')
+
+        ffn_test_results = {}
+        ffn_loss, ffn_rsquared = ffn.evaluate(X_test, y_test, verbose=2)
+        ffn_test_results['FFN'] = {
+            'Mean Squared error': ffn_loss,
+            'R2': ffn_rsquared
+        }
+        
+        results_df = pd.DataFrame(ffn_test_results).T
+        test_predictions = ffn.predict(X_test)
+
+        debug.message(f'{results_df=}')
+        debug.message(f'{test_predictions=}')
+
+        # axs = plt.axes(aspect='equal')
+        # plt.scatter(y_test, test_predictions)
+        # plt.xlabel('True Values')
+        # plt.ylabel('Predictions')
+        # lims = [0,500]
+        # plt.xlim(lims)
+        # plt.ylim(lims)
+        # plt.plot(lims, lims)
+
+        # error = y_test - test_predictions
+        # plt.hist(error, bins=25)
+        # plt.xlabel('Error = Target - Outputs')
+        # plt.ylabel('Count')
 
 
-    step4_ffn_output = ffn(ffn_x).detach().numpy()
-    #TODO validation -> print statement r^2 and other measures to check performance
+        # pco2_estimate = ffn.predict(Estimation_data)
+
+        #TODO Dropout check how many percent is used for backward?
+
+
     debug.message(1/0)
+    step4_ffn_output = ffn(ffn_x).detach().numpy()
     #matlab_pco2_sim = scipy.io.loadmat('ffnoutput_pCO2.mat', appendmat=False)['data_all']
     step4_plot_data_pco2 = scipy.io.loadmat('step4_plot_data_pco2.mat', appendmat=False)['step4_plot_data_pco2']
     step4_plot_data_bgcmean = scipy.io.loadmat('step4_plot_data_bgcmean.mat', appendmat=False)['step4_plot_data_bgcmean']
