@@ -215,8 +215,9 @@ def run() -> None:
 
     #========4) Backprop part for every Neuron====
     for biome in content:
-        print(f'Biome: {biome}')
+        print(f'\nBiome {biome}-------------------------------------------')
         ffn_training_classes = data_t_classes[biome==data_t_classes]
+        debug.message(ffn_training_classes.shape)
         ffn_training_data = data_train[biome==data_t_classes]
         ffn_training_month = data_t_month[biome==data_t_classes]
         ffn_training_year = data_t_year[biome==data_t_classes]
@@ -241,6 +242,8 @@ def run() -> None:
         data_ffn_training = ffn_labelling_data.astype(np.float32)
         data_ffn_pco2 = ffn_fCO2.astype(np.float32)
 
+        data_ffn_estimation = ffn_training_data.astype(np.float32)
+
         X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(data_ffn_training, data_ffn_pco2, test_size=0.2)
 
         # ffn_x_mean = ffn_x.mean(dim=0)
@@ -256,7 +259,7 @@ def run() -> None:
         ffn_hidden_dim = 60#in matlab 25 is used
         ffn_output_dim = 1
 
-        ffn_learning_rate = 0.005
+        ffn_learning_rate = 0.001
         ffn_num_epochs = 200
 
         ffn_normalizer = tf.keras.layers.Normalization(axis=-1)
@@ -273,7 +276,6 @@ def run() -> None:
             return model
             
         ffn = build_and_compile_model()
-        debug.message('model built')
         ffn.summary()
 
 
@@ -310,9 +312,10 @@ def run() -> None:
             plt.ylabel('Mean Squared Error')
             plt.legend()
             plt.grid(True)
+            plt.show()
         plot_loss(ffn_history)
 
-        debug.message(f'{ffn.metrics_names=}')
+        # debug.message(f'{ffn.metrics_names=}')
 
         ffn_test_results = {}
         ffn_loss, ffn_rsquared = ffn.evaluate(X_test, y_test, verbose=2)
@@ -324,32 +327,87 @@ def run() -> None:
         results_df = pd.DataFrame(ffn_test_results).T
         test_predictions = ffn.predict(X_test)
 
-        debug.message(f'{results_df=}')
-        debug.message(f'{test_predictions=}')
+        # debug.message(f'{results_df=}')
+        # debug.message(f'{test_predictions=}')
 
-        # axs = plt.axes(aspect='equal')
-        # plt.scatter(y_test, test_predictions)
-        # plt.xlabel('True Values')
-        # plt.ylabel('Predictions')
-        # lims = [0,500]
-        # plt.xlim(lims)
-        # plt.ylim(lims)
-        # plt.plot(lims, lims)
+        axs = plt.axes(aspect='equal')
+        plt.scatter(y_test, test_predictions)
+        plt.xlabel('True Values')
+        plt.ylabel('Predictions')
+        lims = [0,500]
+        plt.xlim(lims)
+        plt.ylim(lims)
+        plt.plot(lims, lims)
+        plt.show()
 
-        # error = y_test - test_predictions
-        # plt.hist(error, bins=25)
-        # plt.xlabel('Error = Target - Outputs')
-        # plt.ylabel('Count')
+        error = y_test - test_predictions
+        plt.hist(error, bins=25)
+        plt.xlabel('Error = Target - Outputs')
+        plt.ylabel('Count')
+        plt.show()
 
 
-        # pco2_estimate = ffn.predict(Estimation_data)
+        pco2_estimate = ffn.predict(data_ffn_estimation)
+        pco2_estimate[pco2_estimate<0] = np.nan
+
+        debug.message(pco2_estimate.shape)
+        debug.message(ffn_training_classes.shape)
 
         #TODO Dropout check how many percent is used for backward?
 
+        def vec_to_array2_from_orgmatlabcode(vec, lon, lat, LON, LAT):
+            arr = np.zeros((len(lat), len(lon)))
 
+            for a in range(len(vec)):
+                i = np.where(LAT[a] == lat)[0]
+                j = np.where(LON[a] == lon)[0]
+                if i.size > 0 and j.size > 0:
+                    arr[i[0], j[0]] = vec[a]
+    
+            arr[arr == 0] = np.nan
+            return arr
+
+        final_pco2 = np.empty()
+        final_biomes = np.empty()
+        for year in settings.year_output:
+
+            pco2_oneyear = np.empty(12)
+            biomes_oneyear = np.empty(12)
+            for month in range(11):
+
+                debug.message(np.array(np.where((ffn_training_year == year) & (ffn_training_month == month))).shape)
+                pco2 = pco2_estimate[np.where((ffn_training_year == year) & (ffn_training_month == month))]
+                biomes = ffn_training_classes[np.where((ffn_training_year == year) & (ffn_training_month == month))]
+
+                pco2 = vec_to_array2_from_orgmatlabcode(pco2, settings.data_lon[0], settings.data_lat[:, 0], ffn_training_lon, ffn_training_lat)
+                biomes = vec_to_array2_from_orgmatlabcode(biomes, settings.data_lon[0], settings.data_lat[:, 0], ffn_training_lon, ffn_training_lat)
+
+                pco2_oneyear[month] = pco2
+                biomes_oneyear[month] = biomes
+                pass
+
+
+            final_pco2 = np.append(final_pco2, pco2_oneyear, axis=0)
+            final_biomes = np.append(final_biomes, biomes_oneyear, axis=0)
+
+        print(f'Biome {biome} finished----------------------------------\n\n')
+
+
+    
     debug.message(1/0)
-    step4_ffn_output = ffn(ffn_x).detach().numpy()
-    #matlab_pco2_sim = scipy.io.loadmat('ffnoutput_pCO2.mat', appendmat=False)['data_all']
+    nan_index = 0
+    data_pco2: np.ndarray = np.full((516, 180, 360), np.nan)
+    data_pco2: np.ndarray = data_pco2.flatten()
+    data_pco2[np.logical_not(nan_index)] = final_pco2
+    data_pco2: np.ndarray = data_pco2.reshape((516, 180, 360))
+
+    data_biomes: np.ndarray = np.full((516, 180, 360), np.nan)
+    data_biomes: np.ndarray = data_biomes.flatten()
+    data_biomes[np.logical_not(nan_index)] = final_biomes
+    data_biomes: np.ndarray = data_biomes.reshape((516, 180, 360))
+
+    # step4_ffn_output = ffn(ffn_x).detach().numpy()
+    # matlab_pco2_sim = scipy.io.loadmat('ffnoutput_pCO2.mat', appendmat=False)['data_all']
     step4_plot_data_pco2 = scipy.io.loadmat('step4_plot_data_pco2.mat', appendmat=False)['step4_plot_data_pco2']
     step4_plot_data_bgcmean = scipy.io.loadmat('step4_plot_data_bgcmean.mat', appendmat=False)['step4_plot_data_bgcmean']
 
